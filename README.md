@@ -7,7 +7,7 @@ My personal pipeline to species identification on camera trap pix using deep lea
 
 3. Extraire du fichier json créé à l'étape précédente les infos nécessaires aux prédictions en utilisant le script extract_from_json.R
 
-(4. Faire la prédiction avec le modèle entrainé sur pix Jura ; https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Voir plus bas pour plus de détails.
+(4. Faire la prédiction avec le modèle entrainé sur pix Jura ; https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Voir plus bas pour plus de détails. Le modèle déjà entrainé est ici https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB.
 
 (5. Évaluer les performances TP, FN, FP avec script R postprocessML.R)
 
