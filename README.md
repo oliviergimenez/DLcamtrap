@@ -14,6 +14,16 @@ My personal pipeline to species identification on camera trap pix using deep lea
 
 Concernant l'étape 2 :
 
+Se mettre dans le répertoire où se trouent les script environment.yml et environment-detector.yml
+Faire 
+conda env create --file environment.yml
+Puis faire
+conda env create --file environment-detector.yml
+En changeant si besoin 
+- tensorflow-gpu>=1.9.0, <1.15.0
+En
+- tensorflow=1.14
+
 Bien pensé à activer conda via un :
 conda activate cameratraps
 
@@ -28,6 +38,10 @@ python3 -m pip install tensorflow==1.14, et la tout roule
 On est alors prêt a utiliser megadetector :
 
 Soit on met des cadres sur les photos via (5 secondes par pix en moy):
+
+Pour une image, python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_file /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/I__00001\ \(7\)resized.JPG
+
+Pour toutes les images d'un répertoire 
 python3 /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_dir /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/
 
 Soit on crée un fichier json avec les coordonnées des boites
