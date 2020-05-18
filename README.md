@@ -77,7 +77,7 @@ python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /U
 
 Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo traitée, ainsi que la catégorie de l'objet détecté et un degré de confiance :
 
-![detections]()
+![detections](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.3%20d%20(145)resized_detections.jpg)
 
 b. On traite toutes les photos du dossier pix_resized. 
 
