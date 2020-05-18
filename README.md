@@ -124,7 +124,7 @@ On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. Ce fichie
   },
 ```
 
-On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = animal, 2 = personne, 3 = groupe, 4 = véhicule), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height). On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente.
+On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = animal, 2 = personne, 3 = groupe, 4 = véhicule), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height) où l'origine de l'image est en haut à gauche à (xmin, ymin) (les coordonnées sont en coordonnées absolues). Il nous faudra la boîte sous la forme (ymin, xmin, ymax, xmax) ; si detection = (detection[0],detection[1],detection[2],detection[3])=(xmin, ymin, width, height) est le format json, alors la correspondance est xmin = detection[0], ymin = detection[1], xmax = detection[0] + detection[2] et ymax = detection[1] + detection[3]. On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente. 
 
 ## Etape 3. Métadonnées test. 
 
@@ -227,12 +227,20 @@ box_coord %>%
   mutate(FileName = str_remove(FileName, '/Users/oliviergimenez/Desktop/pix_resized/')) %>%
   left_join(manual_tags, by = 'FileName') %>%
   mutate(FileName = paste0('/Users/oliviergimenez/Desktop/pix_resized/',FileName)) %>%
-  select(FileName, xmin, xmax, ymin, ymax, Keywords) %>%
+  select(FileName, xmin, ymin, xmax, ymax, Keywords) %>%
   filter(!is.na(xmin)) %>% # select only pix with a box
-  write_csv(paste0(json_folder,'test.csv'))
+  mutate(xmin = floor(1024 * xmin),
+         xmax = floor(1024 * xmax),
+         ymin = floor(1024 * ymin),
+         ymax = floor(1024 * ymax)) %>%
+  filter(! Keywords %in% c('cavalier','vehicule','humain','chien','vide','oiseaux')) %>%
+  mutate(Keywords = fct_recode(Keywords, 'lièvre' = 'lievre')) %>%
+  mutate(Keywords = fct_recode(Keywords, 'chat forestier' = 'chat')) %>%
+  write_csv(paste0(json_folder,'test.csv'), 
+            col_names = FALSE)
 ```
 
-Le fichier crée peut être récupéré [là](https://mycore.core-cloud.net/index.php/s/5PYIlSqpzzcC5RX). A noter qu'on a supprimé de ce fichier toutes les photos dans lesquelles aucun objet n'a été détecté (pas de boîte). Cette étape devrait faire patie de l'évaluation des performances. On suppose qu'on ne supprime aucun photo avec une détection d'animaux. 
+Le fichier crée peut être récupéré [là](https://mycore.core-cloud.net/index.php/s/5PYIlSqpzzcC5RX). A noter qu'on a supprimé de ce fichier toutes les photos dans lesquelles aucun objet n'a été détecté (pas de boîte) et celles qui ne correspondent pas à une catégorie entrainée. Cette étape devrait faire partie de l'évaluation des performances. 
 
 ## Etape 4. Classification. 
 
@@ -269,12 +277,41 @@ cd ..
 /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/debug.py --annotations csv test.csv class.csv
 ```
 
-On fait la classification sur les photos qui ont déjà le cadre de la détection. 
+On fait la classification sur les photos qui ont déjà le cadre de la détection : 
 
 ```
-/Users/gimenez/Desktop/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --score-threshold 0.5 csv test.csv class.csv resnet50_csv_10.h5
+/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluate.py --convert-model --save-path pix_pred/ --score-threshold 0.5 csv test.csv class.csv resnet50_csv_10.h5
 ```
 
+On peut voir les photos classifiées dans le répertoire pix_pred/ avec le cadre en vert de l'étape détection par MegaDetector (qui est systématiquement trop bas) et celui en bleu de la classification par RetinaNet. Les photos peuvent être téléchargées [ici](https://mycore.core-cloud.net/index.php/s/gIkolFLoNuiT1lM). 
+
+On peut faire le même exercice, mais en ne supprimant aucun photo, en ne gardant que le tag manuel, et en voyant ce que RetinaNet donne. Dans le script R précédent, modifier la dernière partie pour avoir :
+
+```
+box_coord %>% 
+  rename(FileName = name) %>%
+  mutate(FileName = str_remove(FileName, '/Users/oliviergimenez/Desktop/pix_resized/')) %>%
+  left_join(manual_tags, by = 'FileName') %>%
+  mutate(FileName = paste0('/Users/oliviergimenez/Desktop/pix_resized/',FileName)) %>%
+  mutate(colxmin = NA,
+         colymin = NA,
+         colxmax = NA,
+         colymax = NA,
+         colkeywords = NA) %>%
+  select(FileName, colxmin, colymin, colxmax, colymax, colkeywords) %>%
+  write_csv(paste0(json_folder,'test2.csv'), 
+            col_names = FALSE,
+            na = '')
+```
+
+Le fichier test2.csv est [ici](https://mycore.core-cloud.net/index.php/s/XYEoMF0Puz6FMqV). Puis dans le Terminal, faire :
+```
+/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluate.py --convert-model --save-path pix_pred2/ --score-threshold 0.5 csv test2.csv class.csv resnet50_csv_10.h5
+```
+
+Les résultats sont téléchargeables [là](https://mycore.core-cloud.net/index.php/s/z2gcio7JgXGd7jt).
+
+Avec qqs dizaines de photos, il est relativement facile d'évaluer les performances (étape suivante) de la classification. Maintenant si on a beaucoup de photos, on aimerait récupérer l'information brute. Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, on utilise un script Python écrit par Vincent Miele, et téléchargeable via [ce lien](https://gitlab.com/ecostat/imaginecology/-/raw/master/projects/cameraTrapDetectionWithRetinanet/detect2txt.py)
 
 ## Etape 5. Evaluation. 
 
@@ -288,16 +325,7 @@ On évalue les performances avec script R.
 
 
 
-3. Run evalation algo w/ command /Users/gimenez/Desktop/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --score-threshold 0.5 csv test.csv class.csv retinanet_tutorial_best_weights.h5
-
-In case you get ModuleNotFoundError: No module named 'keras_retinanet.utils.compute_overlap', run the command 
-```
-python setup.py build_ext --inplace
-```
-in the directory where the setup.py file is.
-
-
-Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, voilà un script Python écrit par Vincent Miele le 11 mai 2020 :
+ :
 
 "J'ai ajouté un script Python décrit en bas de la page
 https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet
@@ -308,6 +336,6 @@ Il s'agit de "detect2txt.py" :
 sont par défaut marchent si tu as suivi le tuto)
 -et puis lancer "python3 detect2txt.py"" ; chez moi il faut ajouter le chemin absolu python3 /Users/oliviergimenez/Desktop/DLcameratraps/keras-retinanet-master/keras_retinanet/bin/detect2txt.py et avoir au préalable installer deux librairies manquantes, matplotlib et pandas
 
-Concernant l'étape 5, Gaspard fournit 2 scripts detect.py et detect2.py en pj. La différence entre les deux fichiers est dans la façon de calculer les faux négatifs. Le script detect.py calcule TP, FN et FP alors que detect2.py permet d'aller un peu plus dans le détail et de séparer les faux négatifs en FNvoid si l'animal n'est pas détecté et FN_false si l'animal a été détecté mais mal classifié. Ça fait suite à votre idée d'ajouter dans le background les classes avec peu de photos pour réduire le nombre de faux positifs. 
+Gaspard fournit 2 scripts detect.py et detect2.py en pj. La différence entre les deux fichiers est dans la façon de calculer les faux négatifs. Le script detect.py calcule TP, FN et FP alors que detect2.py permet d'aller un peu plus dans le détail et de séparer les faux négatifs en FNvoid si l'animal n'est pas détecté et FN_false si l'animal a été détecté mais mal classifié. Ça fait suite à votre idée d'ajouter dans le background les classes avec peu de photos pour réduire le nombre de faux positifs. 
 
 Note : le calcul de ces métriques d'erreur ne tiennent pas compte des erreurs faites à l'étape de la détection des objets avec MegaDetector. 
