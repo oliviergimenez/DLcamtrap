@@ -228,14 +228,30 @@ box_coord %>%
   left_join(manual_tags, by = 'FileName') %>%
   mutate(FileName = paste0('/Users/oliviergimenez/Desktop/pix_resized/',FileName)) %>%
   select(FileName, xmin, xmax, ymin, ymax, Keywords) %>%
+  filter(!is.na(xmin)) %>% # select only pix with a box
   write_csv(paste0(json_folder,'test.csv'))
 ```
 
+Le fichier crée peut être récupéré [là](https://mycore.core-cloud.net/index.php/s/5PYIlSqpzzcC5RX). A noter qu'on a supprimé de ce fichier toutes les photos dans lesquelles aucun objet n'a été détecté (pas de boîte). Cette étape devrait faire patie de l'évaluation des performances. On suppose qu'on ne supprime aucun photo avec une détection d'animaux. 
+
 ## Etape 4. Classification. 
+
+Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB), son petit nom est resnet50_csv_10.h5.
+
+Il nous faut le fichier [class.csv](https://mycore.core-cloud.net/index.php/s/gJkqIMK92ZyDFvK) qui contient les espèces sur lesquelles on a entrainé l'algorithme.
+
+On fait la classification sur les photos qui ont déjà le cadre de la détection. 
+
+```
+/Users/gimenez/Desktop/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --score-threshold 0.5 csv test.csv class.csv resnet50_csv_10.h5
+```
+
 
 ## Etape 5. Evaluation. 
 
 On évalue les performances avec script R. 
+
+(5. Évaluer les performances TP, FN, FP avec script R postprocessML.R)
 
 /Users/oliviergimenez/Desktop/DLcameratraps/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --
 
@@ -243,86 +259,13 @@ On évalue les performances avec script R.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(4. Faire la prédiction avec le modèle entrainé sur pix Jura ; https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Voir plus bas pour plus de détails. Le modèle déjà entrainé est ici https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB.
-
-(5. Évaluer les performances TP, FN, FP avec script R postprocessML.R)
-
-
-Concernant l'étape 2 :
-
-Se mettre dans le répertoire où se trouent les script environment.yml et environment-detector.yml
-Faire 
-conda env create --file environment.yml
-Puis faire
-conda env create --file environment-detector.yml
-En changeant si besoin 
-- tensorflow-gpu>=1.9.0, <1.15.0
-En
-- tensorflow=1.14
-
-Bien pensé à activer conda via un :
-conda activate cameratraps
-
-Et avant ça, aller dans le répertoire CameraTraps et faire un 
-conda env create --file environment.yml
-puis un 
-conda init
-
-Suite au message d'erreur AttributeError: module 'tensorflow' has no attribute 'GraphDef', j'ai downgrade tensorflow via
-python3 -m pip install tensorflow==1.14, et la tout roule
-
-On est alors prêt a utiliser megadetector :
-
-Soit on met des cadres sur les photos via (5 secondes par pix en moy):
-
-Pour une image, python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_file /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/I__00001\ \(7\)resized.JPG
-
-Pour toutes les images d'un répertoire 
-python3 /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_dir /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/
-
-Dans le répertoire où se trouvent les photos, vous trouverez une copie de chacune d'entre elles, avec ajout de 'detections' dans le nom du fichier, et si vous ouvres les photos, il y a un cadre avec animal, person ou vehicule. Et pas de cadre dans les photos où rien n'est trouvé.
-
-Soit on crée un fichier json avec les coordonnées des boites
-python3 /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector_batch.py /Users/oliviergimenez/Desktop/megadetector_v3.pb /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/ /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/box_ain.json
-
-
-Concernant l'étape 4.
-
-0. Follow Step 2 and Installation of RetinaNet https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet#2-installation-of-retinanet
-
-1. Download directory https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet
-
-2. Follow https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet#6-detecting-the-animals-on-a-test-set
-
-2a. Download trained model ftp://pbil.univ-lyon1.fr/pub/datasets/imaginecology/retinanet/retinanet_tutorial_best_weights.h5 and put it in directory
-
-2b. Get pictures on which do the detection by typing in a terminal
-wget -r -nd -np ftp://pbil.univ-lyon1.fr/pub/datasets/imaginecology/retinanet/test/ and put them in the test/ directory in the main directory
-
 3. Run evalation algo w/ command /Users/gimenez/Desktop/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --score-threshold 0.5 csv test.csv class.csv retinanet_tutorial_best_weights.h5
 
-In case you get ModuleNotFoundError: No module named 'keras_retinanet.utils.compute_overlap', run the command python setup.py build_ext --inplace in the directory where the setup.py file is.
+In case you get ModuleNotFoundError: No module named 'keras_retinanet.utils.compute_overlap', run the command 
+```
+python setup.py build_ext --inplace
+```
+in the directory where the setup.py file is.
 
 
 Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, voilà un script Python écrit par Vincent Miele le 11 mai 2020 :
