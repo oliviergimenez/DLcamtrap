@@ -44,6 +44,8 @@ Pour une image, python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_t
 Pour toutes les images d'un répertoire 
 python3 /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_dir /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/
 
+Dans le répertoire où se trouvent les photos, vous trouverez une copie de chacune d'entre elles, avec ajout de 'detections' dans le nom du fichier, et si vous ouvres les photos, il y a un cadre avec animal, person ou vehicule. Et pas de cadre dans les photos où rien n'est trouvé.
+
 Soit on crée un fichier json avec les coordonnées des boites
 python3 /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector_batch.py /Users/oliviergimenez/Desktop/megadetector_v3.pb /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/ /Users/oliviergimenez/Desktop/36.2_G_Lot3resized/box_ain.json
 
@@ -78,3 +80,5 @@ sont par défaut marchent si tu as suivi le tuto)
 -et puis lancer "python3 detect2txt.py"" ; chez moi il faut ajouter le chemin absolu python3 /Users/oliviergimenez/Desktop/DLcameratraps/keras-retinanet-master/keras_retinanet/bin/detect2txt.py et avoir au préalable installer deux librairies manquantes, matplotlib et pandas
 
 Concernant l'étape 5, Gaspard fournit 2 scripts detect.py et detect2.py en pj. La différence entre les deux fichiers est dans la façon de calculer les faux négatifs. Le script detect.py calcule TP, FN et FP alors que detect2.py permet d'aller un peu plus dans le détail et de séparer les faux négatifs en FNvoid si l'animal n'est pas détecté et FN_false si l'animal a été détecté mais mal classifié. Ça fait suite à votre idée d'ajouter dans le background les classes avec peu de photos pour réduire le nombre de faux positifs. 
+
+Note : le calcul de ces métriques d'erreur ne tiennent pas compte des erreurs faites à l'étape de la détection des objets avec MegaDetector. 
