@@ -1,10 +1,10 @@
 # Mon pipeline pour l'identification d'espèces sur photos
 
-On a un ensemble de [46 photos annotées à la main](https://mycore.core-cloud.net/index.php/s/ub5iTNSktszLvCv). L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier pix/ dont le chemin absolu est /Users/oliviergimenez/Desktop/. 
+On a un ensemble de 46 photos annotées à la main téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/ub5iTNSktszLvCv). L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier pix/ dont le chemin absolu est /Users/oliviergimenez/Desktop/. 
 
-Je voudrais évaluer les performances (vrais positifs, faux négatifs et faux positifs) du modèle entrainé par Gaspard à reconnaître les espèces qui sont sur ces photos, et en particulier lynx, chamois et chevreuils. 
+Je voudrais évaluer les performances (vrais positifs, faux négatifs et faux positifs) du modèle entrainé par Gaspard Dussert sur un échantillon des photos du Jura annotées par Anna Chaine à reconnaître les espèces qui sont sur ces photos, et en particulier lynx, chamois et chevreuils. 
 
-Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. L'idée est aussi appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple [celui-ci](https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674). 
+Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. La même idée est appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple [celui-ci](https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674). 
 
 Le gros du boulot (en particulier l'entrainement d'un modèle de classification, cf. étape 4) a été fait par Gaspard Dussert en stage en 2019 avec Vincent Miele. Plus de détails [sur le site dédié du GdR EcoStat](https://ecostat.gitlab.io/imaginecology/). 
 
@@ -69,7 +69,9 @@ Avant de se lancer, il faut récupérer le modèle megadetector_v3.pb pour la d�
 
 On est prêt à utiliser MegaDetector. Trois options s'offrent à nous. 
 
-a. On traite une seule photo, disons '1.3 D (145)resized.JPG', et on lui met un cadre là où un objet est détecté. Taper dans le Terminal : 
+### a. On traite une seule photo.
+
+On prend par exemple '1.3 D (145)resized.JPG', et on lui met un cadre là où un objet est détecté. Taper dans le Terminal : 
 
 ```
 python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_file /Users/oliviergimenez/Desktop/pix_resized/1.3\ D\ \(145\)resized.JPG
@@ -79,22 +81,25 @@ Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo tra
 
 ![detections](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.3%20d%20(145)resized_detections.jpg)
 
-b. On traite toutes les photos du dossier pix_resized. 
+### b. On traite toutes les photos du dossier pix_resized. 
 
 ```
 python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_dir /Users/oliviergimenez/Desktop/pix_resized/
 ```
 
-Les photos avec cadre sont ajoutées dans le même répertoire pix_resized, leur nom est juste modifié avec l'ajout de 'detections' pour signifier qu'elles ont été traitées. On remarque que pour la photo déjà traitée au a., un autre cadre a été ajouté, et la photo a été doublée. Si pour les animaux, le taux de succès est de 100%, pour les véhicules, il est de 0%, et pour les humains ce taux est élevé, mais pas de 100%. Pour les photos vides, pas de faux positifs, ie pas de cadre là où pas d'objets. Vu notre objectif, celui de travailler sur les interactions entre lynx, chamois, et chevreuils, le fait de détecter tous les animaux, et de ne pas mettre des cadre là où il n'y a pas d'animaux, nous semble prometteur, et ok pour continuer.
+Les photos avec cadre sont ajoutées dans le même répertoire pix_resized, leur nom est juste modifié avec l'ajout de 'detections' pour signifier qu'elles ont été traitées. Les photos avec détections peuvent être récupérées [ici](https://mycore.core-cloud.net/index.php/s/nMCUzlbSxR6pho9). On remarque que pour la photo déjà traitée au a., un autre cadre a été ajouté, et la photo a été doublée. Si pour les animaux, le taux de succès est de 100%, pour les véhicules, il est de 0%, et pour les humains ce taux est élevé, mais pas de 100%. Pour les photos vides, pas de faux positifs, ie pas de cadre là où pas d'objets. Vu notre objectif, celui de travailler sur les interactions entre lynx, chamois, et chevreuils, le fait de détecter tous les animaux, et de ne pas mettre des cadre là où il n'y a pas d'animaux, nous semble prometteur, et ok pour continuer.
 
-c. On ne touche pas aux photos, on crée un fichier json dans lequel on récupère les coordonnées des cadres, ainsi que les catégories des objets détectés. 
+### c. On récupère l'info dans un fichier. 
+
+On ne touche pas aux photos, et on crée plutôt un fichier json dans lequel on récupère les coordonnées des cadres, ainsi que les catégories des objets détectés. Cette étape est indispensable pour passer à la suite. 
 
 ```
 python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector_batch.py /Users/oliviergimenez/Desktop/megadetector_v3.pb /Users/oliviergimenez/Desktop/pix_resized/ /Users/oliviergimenez/Desktop/box_pix.json
 ```
+
 Attention, avant de lancer la commande au-dessus, transférer les 47 photos avec objets encadrés obtenus aux points a. et b. Dans un autre répertoire, par exemple pix_resized_detections, sinon l'étape c. portera sur les 93 photos.
 
-On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. On peut voir des blocs, un bloc correspondant au traitement d'une image, par exemple : 
+On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. Ce fichier est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/vIIezUrWq7qNYFk). On peut voir des blocs, chaque bloc correspondant au traitement d'une image. Par exemple : 
 
 ``` {
    "file": "/Users/oliviergimenez/Desktop/pix_resized/I__00016 (6)resized.JPG",
