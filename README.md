@@ -4,9 +4,9 @@ J'ai un ensemble de 46 photos annotées à la main. L'information sur ce qui a �
 
 Je voudrais évaluer les performances (vrais positifs, faux négatifs et faux positifs) du modèle entrainé par Gaspard à reconnaître les espèces qui sont sur ces photos, et en particulier lynx, chamois et chevreuils. 
 
-Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. L'idée est aussi appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674. 
+Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. L'idée est aussi appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple [celui-ci](https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674). 
 
-Le gros du boulot (en particulier l'entrainement d'un modèle de classification, cf. étape 4) a été fait par Gaspard Dussert en stage en 2019 avec Vincent Miele. Plus de détails ici https://ecostat.gitlab.io/imaginecology/. 
+Le gros du boulot (en particulier l'entrainement d'un modèle de classification, cf. étape 4) a été fait par Gaspard Dussert en stage en 2019 avec Vincent Miele. Plus de détails [sur le site dédié du GdR EcoStat](https://ecostat.gitlab.io/imaginecology/). 
 
 ## Etape 1. Redimensionnement.
 
@@ -42,18 +42,28 @@ for (i in 1:length(file_list)){
 On fait la détection des objets dans les photos. On utilise [MegaDetector](https://github.com/microsoft/CameraTraps#overview) pour se faciliter la vie. Cet algorithme va détecter les objets sur les photos et leur associer un cadre, une boîte. 
 
 Pour ce faire, il faut d'abord télécharger [CameraTraps](https://github.com/microsoft/CameraTraps). Puis, depuis un Terminal, se mettre dans le répertoire CameraTraps/ et suivre [les instructions d'installation](https://github.com/microsoft/CameraTraps#initial-setup). Si on n'a pas de GPU, il faut modifier le fichier dans le fichier environment-detector.yml en commentant la ligne 
-```tensorflow-gpu>=1.9.0, <1.15.0```
+```
+tensorflow-gpu>=1.9.0, <1.15.0
+```
 en
-```# tensorflow-gpu>=1.9.0, <1.15.0```
+```
+# tensorflow-gpu>=1.9.0, <1.15.0
+```
 et ajouter la ligne
-```tensorflow=1.14```.
+```
+tensorflow=1.14
+```
 
 Il se peut qu'il faille installer des modules, dans ce cas, utiliser pip install dans le Terminal. 
 
 Ensuite, dans le Terminal, faire 
-```conda init```
+```
+conda init
+```
 puis
-```conda activate cameratraps```.
+```
+conda activate cameratraps
+```
 
 Avant de se lancer, il faut récupérer le modèle megadetector_v3.pb pour la détection [ici](https://lilablobssc.blob.core.windows.net/models/camera_traps/megadetector/megadetector_v3.pb). 
 
