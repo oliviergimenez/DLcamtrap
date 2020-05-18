@@ -236,9 +236,38 @@ Le fichier crée peut être récupéré [là](https://mycore.core-cloud.net/inde
 
 ## Etape 4. Classification. 
 
-Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB), son petit nom est resnet50_csv_10.h5.
+Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB), son petit nom est resnet50_csv_10.h5. 
 
-Il nous faut le fichier [class.csv](https://mycore.core-cloud.net/index.php/s/gJkqIMK92ZyDFvK) qui contient les espèces sur lesquelles on a entrainé l'algorithme.
+Il nous faut le fichier [class.csv](https://mycore.core-cloud.net/index.php/s/gJkqIMK92ZyDFvK) qui contient les espèces sur lesquelles on a entrainé l'algorithme. On a déjà le fichier test.csv créé à l'étape précédente. 
+
+Les étapes sont les suivantes pour la classification sont les suivantes : 
+
+* On télécharge keras-retinanet [ici](https://github.com/fizyr/keras-retinanet).
+* Aller dans le dossier keras-retinanet puis faire
+```
+pip install numpy --user 
+```
+et
+```
+pip install . --user
+```
+
+On peut vérifier le fichier des annotations qu'on a créé à l'étape précédente :
+```
+/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/debug.py --annotations csv test.csv class.csv
+```
+
+Si on obtient ModuleNotFoundError: No module named 'keras_retinanet.utils.compute_overlap', on peut appliquer la commande suivante pour régler le problème dans le répertoire où se trouve setup.py :
+```
+cd keras-retinanet
+python setup.py build_ext --inplace
+```
+
+On recommence : 
+```
+cd ..
+/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/debug.py --annotations csv test.csv class.csv
+```
 
 On fait la classification sur les photos qui ont déjà le cadre de la détection. 
 
