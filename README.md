@@ -124,17 +124,128 @@ On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. Ce fichie
   },
 ```
 
-On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = , 2 = , 3 = ), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height). On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente.
+On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = animal, 2 = personne, 3 = groupe, 4 = véhicule), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height). On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente.
 
-3 On crée le fichier test.csv avec scripts R. 
+## Etape 3. Métadonnées test. 
 
-4. On prédit.
+Avant de passer à la classification des objet détectés, il nous faut créer un fichier test.csv qui contient le nom du fichier photo, les coordonnées du cadre de l'objet détecté (données par MegaDetector à l'étape 2) et le nom de l'espèce détectée (tag manuel). Pour ce faire, il faut d'abord récupérer les tags manuels dans les métadonnées des photos, puis récupérer les coordonnées des boîtes créées à l'étape 2 de détection, assembler ces deux fichiers, puis on stocke le tout dans un fichier csv. 
 
-5. On évalue les performances avec script R. 
+```
+# load package to manipulate data
+library(tidyverse)
 
+# load package to extract metadata from pix
+library(exifr)
 
+# load package to process json files
+library(jsonlite)
+
+#-- first, get manual tags
+
+# where the resized pix are
+pix_folder <- "/Users/oliviergimenez/Desktop/pix_resized/"
+
+# list all files in the directory with pix
+file_list <- list.files(pix_folder, recursive=TRUE, pattern = "*.JPG", full.names = TRUE)
+
+# get metadata
+manual_tags <- read_exif(file_list) %>%
+  as_tibble() %>%
+  select(FileName, Keywords) %>%
+  unnest(Keywords) %>%
+  filter(!Keywords %in% c('D','46.1','15.1','15.2')) # certains tags ne passent pas bien
+
+# display
+manual_tags
+
+# 46 pix but 47 rows, why?
+manual_tags %>% count(FileName, sort = TRUE)
+
+# pix Cdy00008 (5)resized.JPG has 2 tags, both have to do with humans
+manual_tags %>% filter(FileName == 'Cdy00008 (5)resized.JPG')
+
+# for convenience, let's get rid of 'frequentation humaine' which appears only once
+manual_tags %>% count(Keywords)
+manual_tags <- manual_tags %>% filter(Keywords != 'frequentation humaine')
+
+#-- second, get box coordinates
+
+# where the json file is
+json_folder <- "/Users/oliviergimenez/Desktop/"
+
+# read in the json file
+pixjson <- fromJSON(paste0(json_folder,'box_pix.json'), flatten = TRUE)
+
+# what structure?
+str(pixjson)
+
+# names
+names(pixjson)
+
+# categories are animal, human and vehicules
+pixjson$detection_categories
+
+# get pix only
+pix <- pixjson$images
+names(pix)
+
+# unlist detections and bbox
+box_coord <- pix %>% 
+  as_tibble() %>%
+  unnest(detections, keep_empty = TRUE) %>%
+  unnest_wider(bbox) %>%
+  rename(xmin = '...1',
+         ymin = '...2',
+         width = '...3',
+         height = '...4',
+         name = file,
+         max_det_conf = max_detection_conf,
+         confidence = conf) %>%
+  mutate(xmin = xmin,
+         xmax = xmin + width,
+         ymin = ymin,
+         ymax = ymin + height,
+         category = as.numeric(category)) %>%
+  select(name, category, max_det_conf, confidence, xmin, xmax, ymin, ymax) %>%
+  mutate(category = if_else(is.na(category), 0, category),
+         confidence = if_else(is.na(confidence), 1, confidence))
+  
+# display
+box_coord
+
+# several pix get more than one box, let's take those with max confidence in detection
+box_coord <- box_coord %>% 
+  group_by(name) %>%
+  arrange(desc(confidence)) %>% 
+  slice(1) %>% 
+  ungroup()
+
+#-- third, join two files and build test.csv
+
+box_coord %>% 
+  rename(FileName = name) %>%
+  mutate(FileName = str_remove(FileName, '/Users/oliviergimenez/Desktop/pix_resized/')) %>%
+  left_join(manual_tags, by = 'FileName') %>%
+  mutate(FileName = paste0('/Users/oliviergimenez/Desktop/pix_resized/',FileName)) %>%
+  select(FileName, xmin, xmax, ymin, ymax, Keywords) %>%
+  write_csv(paste0(json_folder,'test.csv'))
+```
+
+## Etape 4. Classification. 
+
+## Etape 5. Evaluation. 
+
+On évalue les performances avec script R. 
 
 /Users/oliviergimenez/Desktop/DLcameratraps/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --
+
+
+
+
+
+
+
+
 
 
 
