@@ -13,9 +13,14 @@ My personal pipeline to species identification on camera trap pix using deep lea
 
 
 Concernant l'étape 2 :
-Bien pensé à activer conda via un :
 
+Bien pensé à activer conda via un :
 conda activate cameratraps
+
+Et avant ça, aller dans le répertoire CameraTraps et faire un 
+conda env create --file environment.yml
+puis un 
+conda init
 
 Suite au message d'erreur AttributeError: module 'tensorflow' has no attribute 'GraphDef', j'ai downgrade tensorflow via
 python3 -m pip install tensorflow==1.14, et la tout roule
