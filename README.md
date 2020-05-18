@@ -1,11 +1,140 @@
-# DLcamtrap
-My personal pipeline to species identification on camera trap pix using deep learning, detection/classification with MegaDetector and RetinaNet
+# Mon 'pipeline' pour l'identification d'espèces sur photos
 
-1. Appliquer script resize.R pour mettre les pix aux bonnes dim
+J'ai un ensemble de 46 photos annotées à la main. L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier pix/ dont le chemin absolu est /Users/oliviergimenez/Desktop/. 
 
-2. Appliquer MegaDetector pour récupérer les coordonnées des boîtes qui montrent les objets détectés (voir ci-dessous pour les commandes) ; https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/detectionWithMegaDetector/
+Je voudrais évaluer les performances (vrais positifs, faux négatifs et faux positifs) du modèle entrainé par Gaspard à reconnaître les espèces qui sont sur ces photos, et en particulier lynx, chamois et chevreuils. 
 
-3. Extraire du fichier json créé à l'étape précédente les infos nécessaires aux prédictions en utilisant le script extract_from_json.R
+Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. L'idée est aussi appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674. 
+
+Le gros du boulot (en particulier l'entrainement d'un modèle de classification, cf. étape 4) a été fait par Gaspard Dussert en stage en 2019 avec Vincent Miele. Plus de détails ici https://ecostat.gitlab.io/imaginecology/. 
+
+## Etape 1. Redimensionnement.
+
+On redimensionne d'abord les images. Pour ce faire, on applique ces quelques lignes de code dans R. On utilise le package magical qui appelle l'excellent petit logiciel imagemagick. Les photos contenues dans le répertoire /Users/oliviergimenez/Desktop/pix sont redimensionnées en 1024x1024 dans le répertoire /Users/oliviergimenez/Desktop/pix_resized. Le nom de chaque photo est affublé d'un resized pour les différentier des photos originales. 
+
+```
+# load package to make R talk to imagemagick
+library(magick)
+
+# where the pix to resize are
+folder <- "/Users/oliviergimenez/Desktop/pix/"
+
+# where the pix, once resized, should be stored
+dest_folder <- "/Users/oliviergimenez/Desktop/pix_resized/"
+
+# create directory to store resized pix
+dir.create(dest_folder)
+
+# list all files in the directory with pix
+file_list <- list.files(path = folder)
+
+# resize them all !
+for (i in 1:length(file_list)){
+	pix <- image_read(paste0(folder,file_list[i]))
+	pixresized <- image_resize(pix, '1024x1024')
+	namewoextension <- strsplit(file_list[i], "\\.JPG")[[1]]
+	image_write(pixresized, paste0(dest_folder,namewoextension,'resized.JPG'))
+}
+```
+
+## Etape 2. Détection. 
+
+On fait la détection des objets dans les photos. On utilise [MegaDetector](https://github.com/microsoft/CameraTraps#overview) pour se faciliter la vie. Cet algorithme va détecter les objets sur les photos et leur associer un cadre, une boîte. 
+
+Pour ce faire, il faut d'abord télécharger [CameraTraps](https://github.com/microsoft/CameraTraps). Puis, depuis un Terminal, se mettre dans le répertoire CameraTraps/ et suivre [les instructions d'installation](https://github.com/microsoft/CameraTraps#initial-setup). Si on n'a pas de GPU, il faut modifier le fichier dans le fichier environment-detector.yml en commentant la ligne 
+```tensorflow-gpu>=1.9.0, <1.15.0```
+en
+```# tensorflow-gpu>=1.9.0, <1.15.0```
+et ajouter la ligne
+```tensorflow=1.14```.
+
+Il se peut qu'il faille installer des modules, dans ce cas, utiliser pip install dans le Terminal. 
+
+Ensuite, dans le Terminal, faire 
+```conda init```
+puis
+```conda activate cameratraps```.
+
+Avant de se lancer, il faut récupérer le modèle megadetector_v3.pb pour la détection [ici](https://lilablobssc.blob.core.windows.net/models/camera_traps/megadetector/megadetector_v3.pb). 
+
+On est prêt à utiliser MegaDetector. Trois options s'offrent à nous. 
+
+a. On traite une seule photo, disons '1.3 D (145)resized.JPG', et on lui met un cadre là où un objet est détecté. Taper dans le Terminal : 
+
+```
+python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_file /Users/oliviergimenez/Desktop/pix_resized/1.3\ D\ \(145\)resized.JPG
+```
+
+Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo traitée, ainsi que la catégorie de l'objet détecté et un degré de confiance. 
+
+b. On traite toutes les photos du dossier pix_resized. 
+
+```
+python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_dir /Users/oliviergimenez/Desktop/pix_resized/
+```
+
+Les photos avec cadre sont ajoutées dans le même répertoire pix_resized, leur nom est juste modifié avec l'ajout de 'detections' pour signifier qu'elles ont été traitées. On remarque que pour la photo déjà traitée au a., un autre cadre a été ajouté, et la photo a été doublée. Si pour les animaux, le taux de succès est de 100%, pour les véhicules, il est de 0%, et pour les humains ce taux est élevé, mais pas de 100%. Pour les photos vides, pas de faux positifs, ie pas de cadre là où pas d'objets. Vu notre objectif, celui de travailler sur les interactions entre lynx, chamois, et chevreuils, le fait de détecter tous les animaux, et de ne pas mettre des cadre là où il n'y a pas d'animaux, nous semble prometteur, et ok pour continuer.
+
+c. On ne touche pas aux photos, on crée un fichier json dans lequel on récupère les coordonnées des cadres, ainsi que les catégories des objets détectés. 
+
+```
+python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector_batch.py /Users/oliviergimenez/Desktop/megadetector_v3.pb /Users/oliviergimenez/Desktop/pix_resized/ /Users/oliviergimenez/Desktop/box_pix.json
+```
+Attention, avant de lancer la commande au-dessus, transférer les 47 photos avec objets encadrés obtenus aux points a. et b. Dans un autre répertoire, par exemple pix_resized_detections, sinon l'étape c. portera sur les 93 photos.
+
+On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. On peut voir des blocs, un bloc correspondant au traitement d'une image, par exemple : 
+
+``` {
+   "file": "/Users/oliviergimenez/Desktop/pix_resized/I__00016 (6)resized.JPG",
+   "max_detection_conf": 0,
+   "detections": []
+  },
+  {
+   "file": "/Users/oliviergimenez/Desktop/pix_resized/Cdy00020resized.JPG",
+   "max_detection_conf": 0.999,
+   "detections": [
+    {
+     "category": "1",
+     "conf": 0.999,
+     "bbox": [
+      0.6317,
+      0.5045,
+      0.3677,
+      0.1947
+     ]
+    }
+   ]
+  },
+```
+
+On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = , 2 = , 3 = ), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height). On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente.
+
+3 On crée le fichier test.csv avec scripts R. 
+
+4. On prédit.
+
+5. On évalue les performances avec script R. 
+
+
+
+/Users/oliviergimenez/Desktop/DLcameratraps/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (4. Faire la prédiction avec le modèle entrainé sur pix Jura ; https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Voir plus bas pour plus de détails. Le modèle déjà entrainé est ici https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB.
 
