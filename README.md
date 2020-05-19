@@ -154,6 +154,11 @@ On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. Ce fichie
 
 On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = animal, 2 = personne, 3 = groupe, 4 = véhicule), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height) où l'origine de l'image est en haut à gauche à (xmin, ymin) (les coordonnées sont en coordonnées absolues). Il nous faudra la boîte sous la forme (ymin, xmin, ymax, xmax) pour plus tard ; si detection = (detection[0], detection[1], detection[2], detection[3]) = (xmin, ymin, width, height) est le format json, alors la correspondance est xmin = detection[0], ymin = detection[1], xmax = detection[0] + detection[2] et ymax = detection[1] + detection[3]. On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente. 
 
+Ne pas oublier de quitter l'environnement `cameratraps` en faisant : 
+```
+conda deactivate
+```
+
 ## Etape 3. Métadonnées test. 
 
 Avant de passer à la classification des objet détectés, il nous faut créer un fichier `test.csv` qui contient le nom du fichier photo, les coordonnées du cadre de l'objet détecté (données par `MegaDetector` à l'étape 2) et le nom de l'espèce détectée (tag manuel). Pour ce faire, il faut d'abord récupérer les tags manuels dans les métadonnées des photos, puis récupérer les coordonnées des boîtes créées à l'étape 2 de détection, assembler ces deux fichiers, puis on stocke le tout dans un fichier csv. 
