@@ -346,14 +346,14 @@ classfile = "class.csv" # list of class labels
 
 Alors, dans le Terminal, on utilise une série de commandes similaires à celle utilisées précédemment : 
 ```
-python /Users/oliviergimenez/Desktop/keras-retinanet-master/keras_retinanet/bin/detect2txt.py
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2txt.py
 ```
 
 Les résultats s'affichent à l'écran, avec le nom de fichier, l'espèce identifiée, la confiance, et les coordonnées du cadre. Plus pratique, on peut utiliser la redirection dans un fichier texte :
 ```
-python /Users/oliviergimenez/Desktop/keras-retinanet-master/keras_retinanet/bin/detect2txt.py >> classif_pix.txt
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2txt.py >> classif_pix.txt
 ```
-avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/nQZOyFG3bxVAzpW). A noter que dans le nom des fichiers, il y a des espaces, parfois plusieurs par fichier, je les ai enlevés à la main ici. J'aurais du le faire au tout début, sous `R` par exemple, en utilisant `str_remove_all()`.  
+avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/nQZOyFG3bxVAzpW). 
 
 ## Etape 5. Evaluation. 
 
