@@ -438,5 +438,124 @@ On peut formaliser ces calculs d'erreur en distinguant :
 * les vrais positifs quand une espèce présente sur la photo est détecté et bien classifiée ;
 * les faux positifs quand une espèce n'est pas sur une photo mais y est détectée.
 
-Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script Python detect2.py téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68) qui permet de faire ces calculs. 
+Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script Python detect.py téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/62ORvHlZEpNdA5y) qui permet de faire ces calculs. Je mets ce script dans /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/ et il ne manque plus qu'à modifier deux lignes du script. 
 
+Au début, modifier la ligne 
+```
+model_path = "snapshots_all/resnet50_csv_10.h5"
+```
+en
+```
+model_path = "/Users/oliviergimenez/Desktop/resnet50_csv_10.h5"
+```
+pour dire où se trouve le modèle entrainé (chemin absolu, comme d'habitude).
+
+A la fin du script, modifier la ligne
+```
+comp_exif("/beegfs/data/gdussert/projects/olivier_pipeline/all_classes/test/")
+```
+en 
+```
+comp_exif("/Users/oliviergimenez/Desktop/pix_resized/")
+```
+pour dire où sont les photos à classifier. 
+
+Enfin, dans le Terminal, faire :
+```
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect.py
+```
+
+Sur le Terminal, on a aussi le détail comme suit : 
+
+```
+          species  TP  FP  FN_false  FN_void
+0       blaireaux   0   1         0        0
+1         chamois   3   2         0        0
+2  chat forestier   1   1         1        0
+3       chevreuil   2   2         0        0
+4          lièvre   0   3         0        0
+5            lynx   4   0         0        0
+6          renard   1   3         0        0
+7       sangliers   3   0         0        1
+8            cerf   1   0         0        0
+
+Images source de FP par classe :
+46.1 5
+15.1 3
+chat 2
+lievre 1
+chat forestier 1
+
+Nombre total d'image par classe:
+vide 5
+46.1 5
+lynx 4
+sangliers 4
+15.1 4
+chevreuil 2
+vehicule 4
+chat 2
+cerf 1
+chat forestier 2
+lievre 1
+chien 2
+humain 4
+chamois 3
+oiseaux 1
+renard 1
+cavalier 1
+```
+
+On peut, comme précédemment, mettre tout ça dans un fichier texte via une redirection :
+```
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect.py >> perf.txt
+```
+
+On peut jeter un coup d'oeil au résultat [là](https://mycore.core-cloud.net/index.php/s/GnJwuAnI2NUyin6).
+
+Si l'on n'est pas forcément intéressé par le détail dans les faux négatifs, on peut utiliser un autre script Python, detect2.py, téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68), et qui permet de mettre sur les photos le cadre avec l'espèce vérité et le cadre avec l'espèce prédite, et de créer trois nouveaux répertoires qui contiennent les photos classées en TP, FN et FP, permettant ainsi d'aller regarder en détail les situations qui génèrent les faux négatifs et faux positifs. Ces répertoires se trouvent dans le répertoire qui contient les photos analysées, dans pix_resized/ ici.
+
+Avant de lancer le script, il faut modifier les deux mêmes lignes que pour le script detect.py. Puis on le lance via :
+```
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2.py >> perf2.txt
+```
+
+On peut jeter un coup d'oeil à perf2.txt : 
+```
+          species  TP  FP  FN
+0       blaireaux   0   1   0
+1         chamois   3   2   0
+2  chat forestier   1   1   1
+3       chevreuil   2   2   0
+4          lièvre   0   3   0
+5            lynx   4   0   0
+6          renard   1   3   0
+7       sangliers   4   0   0
+8            cerf   1   0   0
+
+Images source de FP par classe :
+46.1 5
+15.1 3
+chat 2
+lievre 1
+chat forestier 1
+
+Nombre total d'image par classe:
+vide 5
+46.1 5
+lynx 4
+sangliers 4
+15.1 4
+chevreuil 2
+vehicule 4
+chat 2
+cerf 1
+chat forestier 2
+lievre 1
+chien 2
+humain 4
+chamois 3
+oiseaux 1
+renard 1
+cavalier 1
+```
