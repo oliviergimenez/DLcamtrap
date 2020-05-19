@@ -1,14 +1,8 @@
-# A FAIRE
-
-* pas d'espace dans le nom des photos, plizzzzzzz
-* dans les métadonnées, seulement un tag parmi ceux décidés, pas de fioritures autres
-* Expliquer qu'il reste à faire, en particulier entrainement
-
 # Piégeage photo et pipeline pour l'identification d'espèces
 
 On va utilisé les méthodes de deep learning ou aprentissage profond pour faire l'identification automatique des espèces sur les images collectées via piégeages photographiques. Pour une introduction sur le deep learning niveau lycée (d'après l'auteur), voir [ici](https://t.co/aAFS14fJuN?amp=1). Pour une introduction sous R au deep learning qui permet aussi de comprendre les réseaux de neurones, voir [là](http://eric.univ-lyon2.fr/~ricco/tanagra/fichiers/fr_Tanagra_Tensorflow_Keras_R.pdf). Je conseille [ça](https://agentmorris.github.io/camera-trap-ml-survey/) pour une veille sur deep learning et piégeage photographique. 
 
-Pour ce qui nous concerne, on a un ensemble de 46 photos annotées à la main téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/ub5iTNSktszLvCv). L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier pix/ dont le chemin absolu est /Users/oliviergimenez/Desktop/. 
+Pour ce qui nous concerne, on a un ensemble de 46 photos annotées à la main téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/ub5iTNSktszLvCv). Bien s'assurer qu'il n'y a pas d'espace dans le nom des fichiers, et que les étiquettes (ou tags) ne comportent pas d'erreurs (sous Mac, on peut utiliser Photo pour modifier ces tags). L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier pix/ dont le chemin absolu est /Users/oliviergimenez/Desktop/. 
 
 Je voudrais évaluer les performances (vrais positifs, faux négatifs et faux positifs) du modèle entrainé par Gaspard Dussert sur un échantillon des photos du Jura annotées par Anna Chaine à reconnaître les espèces qui sont sur ces photos, et en particulier lynx, chamois et chevreuils. 
 
@@ -576,3 +570,9 @@ cavalier 1
 ```
 
 Au passage, ces scripts detect.py et detect2.py font en un coup les étapes 2, 3 et 4. 
+
+## La suite ? 
+
+* Vérifier que l'algo déjà entrainé n'est pas à côté de la plaque dans l'Ain en comparant les tags manuels entrés par les collègues de l'OFB à la classification prédite de l'algo. Si on n'est pas trop dans les choux, alors fair ele tagging automatique pour toutes les photos de l'Ain pour que Maëlis puisse se servir de ces données pour le stage. 
+
+* A moyen terme, refaire l'entrainement du modèle avec toutes les photos du Jura annotées par Anna (?) et toutes les photos de l'Ain annotées par les collègues de l'OFB. Plus on a de photos, mieux c'est. Ce modèle pourra alors être utilisé pour tagger les photos restantes dans l'Ain, et pour tagger à l'avenir les photos collectées dans le cadre du PPP Lynx. 
