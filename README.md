@@ -260,17 +260,17 @@ box_coord %>%
             col_names = FALSE)
 ```
 
-Le fichier crée peut être récupéré [là](https://mycore.core-cloud.net/index.php/s/5PYIlSqpzzcC5RX). A noter qu'on a supprimé de ce fichier toutes les photos dans lesquelles aucun objet n'a été détecté (pas de boîte) et celles qui ne correspondent pas à une catégorie entrainée. Cette étape devrait faire partie de l'évaluation des performances. 
+Le fichier `test.csv` ainsi créé peut être récupéré [là](https://mycore.core-cloud.net/index.php/s/5PYIlSqpzzcC5RX). A noter qu'on a supprimé de ce fichier toutes les photos dans lesquelles aucun objet n'a été détecté (pas de boîte) et celles qui ne correspondent pas à une catégorie entrainée. 
 
 ## Etape 4. Classification. 
 
-Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB), son petit nom est resnet50_csv_10.h5. 
+Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB), son petit nom est `resnet50_csv_10.h5`. 
 
-Il nous faut le fichier [class.csv](https://mycore.core-cloud.net/index.php/s/gJkqIMK92ZyDFvK) qui contient les espèces sur lesquelles on a entrainé l'algorithme. On a déjà le fichier test.csv créé à l'étape précédente. 
+Il nous faut le fichier [`class.csv`](https://mycore.core-cloud.net/index.php/s/gJkqIMK92ZyDFvK) qui contient les espèces sur lesquelles on a entrainé l'algorithme. On a déjà le fichier `test.csv` créé à l'étape précédente. 
 
 Les étapes sont les suivantes pour la classification sont les suivantes : 
 
-* On télécharge keras-retinanet [ici](https://github.com/fizyr/keras-retinanet).
+* On télécharge `keras-retinanet` [ici](https://github.com/fizyr/keras-retinanet).
 * Aller dans le dossier keras-retinanet puis faire
 ```
 pip install numpy --user 
