@@ -337,17 +337,13 @@ Les résultats sont téléchargeables [là](https://mycore.core-cloud.net/index.
 Un échantillon des photo avec le cadre, l'espèce prédite en haut à gauche du cadre et la confiance :
 
 ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/18.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/16.jpg)
-
 :-------------------------:|:-------------------------:
-
 ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/22.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.jpg)
 :-------------------------:|:-------------------------:
-
 ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/33.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/44.jpg)
-:-------------------------:|:-------------------------
+:-------------------------:|:-------------------------:
 ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/34.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/6.jpg)
 :-------------------------:|:-------------------------:
-
 ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/39.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/8.jpg)
 
 
