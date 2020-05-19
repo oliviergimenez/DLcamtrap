@@ -95,10 +95,10 @@ On est prêt à utiliser MegaDetector. Trois options s'offrent à nous.
 
 ### a. On traite une seule photo.
 
-On prend par exemple '1.3 D (145)resized.JPG', et on lui met un cadre là où un objet est détecté. Taper dans le Terminal : 
+On prend par exemple '1.3D(145)resized.JPG', et on lui met un cadre là où un objet est détecté. Taper dans le Terminal : 
 
 ```
-python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_file /Users/oliviergimenez/Desktop/pix_resized/1.3\ D\ \(145\)resized.JPG
+python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_file /Users/oliviergimenez/Desktop/pix_resized/1.3D\(145\)resized.JPG
 ```
 
 Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo traitée, ainsi que la catégorie de l'objet détecté et un degré de confiance :
