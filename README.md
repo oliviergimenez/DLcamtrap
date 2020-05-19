@@ -262,7 +262,7 @@ Le fichier `test.csv` ainsi créé peut être récupéré [là](https://mycore.c
 
 ## Etape 4. Classification. 
 
-Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/#2-installation-of-retinanet). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB), son petit nom est `resnet50_csv_10.h5`. 
+Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/#2-installation-of-retinanet). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/MeBEqGu5enl0Ffb), son petit nom est `resnet50_csv_10.h5`. 
 
 Il nous faut le fichier [`class.csv`](https://mycore.core-cloud.net/index.php/s/1VjoUM7Ds8tZ0kQ) qui contient les espèces sur lesquelles on a entrainé l'algorithme. On a déjà le fichier `test.csv` créé à l'étape précédente. 
 
