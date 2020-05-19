@@ -559,3 +559,5 @@ oiseaux 1
 renard 1
 cavalier 1
 ```
+
+Au passage, ces scripts detect.py et detect2.py font en un coup les étapes 2, 3 et 4. 
