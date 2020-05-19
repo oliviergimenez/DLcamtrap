@@ -1,7 +1,9 @@
 # A FAIRE
 
 * pas d'espace dans le nom des photos, plizzzzzzz
-* dans les métadonnées, seulement un tag parmi ceux décidés, pas de fioritures autres 
+* dans les métadonnées, seulement un tag parmi ceux décidés, pas de fioritures autres
+* Expliquer modèleRetinaNet et MegaDetector, avec les réfs
+* Expliquer qu'il reste à faire, en particulier entrainement
 
 # Piégeage photo et pipeline pour l'identification d'espèces
 
