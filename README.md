@@ -480,41 +480,39 @@ Sur le Terminal, on a aussi le détail comme suit :
 
 ```
           species  TP  FP  FN_false  FN_void
-0       blaireaux   0   1         0        0
+0       blaireaux   1   0         0        0
 1         chamois   3   2         0        0
 2  chat forestier   1   1         1        0
-3       chevreuil   2   2         0        0
+3       chevreuil   4   0         2        0
 4          lièvre   0   3         0        0
 5            lynx   4   0         0        0
-6          renard   1   3         0        0
+6          renard   3   1         0        0
 7       sangliers   3   0         0        1
 8            cerf   1   0         0        0
 
 Images source de FP par classe :
-46.1 5
-15.1 3
-chat 2
-lievre 1
+chevreuil 2
+lievre 2
 chat forestier 1
+chat 2
 
 Nombre total d'image par classe:
-vide 5
-46.1 5
-lynx 4
-sangliers 4
-15.1 4
-chevreuil 2
-vehicule 4
-chat 2
-cerf 1
-chat forestier 2
-lievre 1
-chien 2
 humain 4
-chamois 3
-oiseaux 1
-renard 1
+renard 3
+chat forestier 2
+chevreuil 6
 cavalier 1
+vehicule 4
+chamois 3
+cerf 1
+oiseaux 1
+vide 6
+lynx 4
+chien 2
+lievre 2
+sangliers 4
+chat 2
+blaireaux 1
 ```
 
 On peut, comme précédemment, mettre tout ça dans un fichier texte via une redirection :
