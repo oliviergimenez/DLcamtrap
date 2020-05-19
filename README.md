@@ -110,13 +110,17 @@ Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo tra
 
 ![detections](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.3%20d%20(145)resized_detections.jpg)
 
+Ne pas oublier de supprimer la photo avec détection si l'on passe par cette étape, en l'occurrence `1.3d(145)resized_detections.jpg`.
+
 ### b. On traite toutes les photos du dossier pix_resized. 
+
+Il suffit de taper en prenant garder de spécifier les bons chemins :
 
 ```
 python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_dir /Users/oliviergimenez/Desktop/pix_resized/
 ```
 
-Les photos avec cadre sont ajoutées dans le même répertoire pix_resized, leur nom est juste modifié avec l'ajout de 'detections' pour signifier qu'elles ont été traitées. Les photos avec détections peuvent être récupérées [ici](https://mycore.core-cloud.net/index.php/s/nMCUzlbSxR6pho9). On remarque que pour la photo déjà traitée au a., un autre cadre a été ajouté, et la photo a été doublée. Si pour les animaux, le taux de succès est de 100%, pour les véhicules, il est de 0%, et pour les humains ce taux est élevé, mais pas de 100%. Pour les photos vides, pas de faux positifs, ie pas de cadre là où pas d'objets. Vu notre objectif, celui de travailler sur les interactions entre lynx, chamois, et chevreuils, le fait de détecter tous les animaux, et de ne pas mettre des cadre là où il n'y a pas d'animaux, nous semble prometteur, et ok pour continuer.
+Les photos avec cadre sont ajoutées dans le même répertoire pix_resized, leur nom est modifié avec l'ajout de 'detections' pour signifier qu'elles ont été traitées. Les photos avec détections peuvent être récupérées [ici](https://mycore.core-cloud.net/index.php/s/nMCUzlbSxR6pho9). Si pour les animaux, le taux de succès est de 100%, pour les véhicules, il est de 0%, et pour les humains ce taux est élevé, mais pas de 100%. Pour les photos vides, pas de faux positifs, ie pas de cadre là où pas d'objets. Vu notre objectif, celui de travailler sur les interactions entre lynx, chamois, et chevreuils, le fait de détecter tous les animaux, et de ne pas mettre des cadre là où il n'y a pas d'animaux, nous semble prometteur. On continue.
 
 ### c. On récupère l'info dans un fichier. 
 
@@ -126,34 +130,29 @@ On ne touche pas aux photos, et on crée plutôt un fichier json dans lequel on 
 python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector_batch.py /Users/oliviergimenez/Desktop/megadetector_v3.pb /Users/oliviergimenez/Desktop/pix_resized/ /Users/oliviergimenez/Desktop/box_pix.json
 ```
 
-Attention, avant de lancer la commande au-dessus, transférer les 47 photos avec objets encadrés obtenus aux points a. et b. Dans un autre répertoire, par exemple pix_resized_detections, sinon l'étape c. portera sur les 93 photos.
+Attention, avant de lancer la commande au-dessus, transférer les 46 photos avec objets encadrés obtenus au point b. dans un autre répertoire, par exemple pix_resized_detections, sinon l'étape c. portera sur les 92 photos.
 
 On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. Ce fichier est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/vIIezUrWq7qNYFk). On peut voir des blocs, chaque bloc correspondant au traitement d'une image. Par exemple : 
 
 ``` {
-   "file": "/Users/oliviergimenez/Desktop/pix_resized/I__00016 (6)resized.JPG",
-   "max_detection_conf": 0,
-   "detections": []
-  },
-  {
-   "file": "/Users/oliviergimenez/Desktop/pix_resized/Cdy00020resized.JPG",
-   "max_detection_conf": 0.999,
+   "file": "/Users/oliviergimenez/Desktop/pix_resized/I__00001(7)resized.JPG",
+   "max_detection_conf": 0.997,
    "detections": [
     {
-     "category": "1",
-     "conf": 0.999,
+     "category": "2",
+     "conf": 0.997,
      "bbox": [
-      0.6317,
-      0.5045,
-      0.3677,
-      0.1947
+      0.3137,
+      0,
+      0.4563,
+      0.8849
      ]
     }
    ]
   },
 ```
 
-On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = animal, 2 = personne, 3 = groupe, 4 = véhicule), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height) où l'origine de l'image est en haut à gauche à (xmin, ymin) (les coordonnées sont en coordonnées absolues). Il nous faudra la boîte sous la forme (ymin, xmin, ymax, xmax) ; si detection = (detection[0],detection[1],detection[2],detection[3])=(xmin, ymin, width, height) est le format json, alors la correspondance est xmin = detection[0], ymin = detection[1], xmax = detection[0] + detection[2] et ymax = detection[1] + detection[3]. On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente. 
+On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = animal, 2 = personne, 3 = groupe, 4 = véhicule), le degré de confiance (conf) ainsi que les caractéristiques de la boîte associée à l'objet (xmin, ymin, width, height) où l'origine de l'image est en haut à gauche à (xmin, ymin) (les coordonnées sont en coordonnées absolues). Il nous faudra la boîte sous la forme (ymin, xmin, ymax, xmax) pour plus tard ; si detection = (detection[0], detection[1], detection[2], detection[3]) = (xmin, ymin, width, height) est le format json, alors la correspondance est xmin = detection[0], ymin = detection[1], xmax = detection[0] + detection[2] et ymax = detection[1] + detection[3]. On arrangera ce fichier à l'étape d'après pour en extraire l'information pertinente. 
 
 ## Etape 3. Métadonnées test. 
 
