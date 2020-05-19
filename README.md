@@ -340,94 +340,61 @@ avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.ne
 Pour évaluer la qualité de la classification, on compare les tags manuels au catégories prédites par l'algorithme. On fait ça sous R : 
 
 ```
-# load suite of packages to manage/visualise data
-library(tidyverse)
-
-# remove blanks in pix names of manual tags
-manual_tags <- manual_tags %>%
-  mutate(FileName = str_remove_all(FileName,' '))
-print(manual_tags, n = Inf)
-
-# read in classifications
-classif <- read_tsv('/Users/oliviergimenez/Desktop/classif_pix.txt', col_names = FALSE) %>%
-  mutate(X1 = str_replace(X1, 'chat forestier', 'chat_forestier')) %>%
-  filter(!str_detect(X1, 'tracking')) %>%
-  separate(X1, 
-           into = c("name","species","confidence","x","y","z","t"), 
-           sep = '\\s') %>%
-  mutate(x = str_remove(x,'\\['),
-         x = str_remove(x,','),
-         y = str_remove(y,','),
-         z = str_remove(z,','),
-         t = str_remove(t,'\\]'),
-         t = str_remove(t,','),
-         x = as.numeric(x),
-         y = as.numeric(y),
-         z = as.numeric(z),
-         t = as.numeric(t)) %>%
-  rename(FileName = name) %>%
-  select(FileName, species, confidence, x, y , z, t) %>%
-  mutate(FileName = str_remove(FileName, 'pix_resized/'))
-print(classif, n = Inf)
-
-# comparison
-manual_tags %>% left_join(classif) %>% print(n=Inf)
-
-# Joining, by = "FileName"
-# # A tibble: 51 x 8
-# FileName                                                                       Keywords       species        confidence     x     y     z     t
-# <chr>                                                                          <chr>          <chr>          <chr>      <dbl> <dbl> <dbl> <dbl>
-# 1 1.3D(145)resized.JPG                                                           chamois        chamois        0.99999046    96   190   833   638
-# 2 1.3D(146)resized.JPG                                                           chamois        chamois        0.99999255     0   343   668   744
-# 3 1.3D(189)resized.JPG                                                           chamois        chamois        0.99998736   200   122   849   658
-# 4 1.3D(208)!!ATTENTION2017AULIEUDE2016!!resized.JPG                              cerf           cerf           0.9998793      6     0   973   576
-# 5 Cdy00002(2)resized.JPG                                                         cavalier       NA             NA            NA    NA    NA    NA
-# 6 Cdy00004(4)resized.JPG                                                         renard         renard         0.9788616    524   354   726   474
-# 7 Cdy00004(4)resized.JPG                                                         renard         sangliers      0.51794666   526   353   720   463
-# 8 Cdy00005(4)resized.JPG                                                         chevreuil      chevreuil      0.9999309     64   263   574   584
-# 9 Cdy00005(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
-# 10 Cdy00007(5)resized.JPG                                                         chat forestier chat_forestier 0.99999195   405   325   636   488
-# 11 Cdy00008(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
-# 12 Cdy00008resized.JPG                                                            chevreuil      chamois        0.9990773    507   206   613   364
-# 13 Cdy00008resized.JPG                                                            chevreuil      chevreuil      0.81188613   507   206   613   364
-# 14 Cdy00011(2)resized.JPG                                                         chevreuil      chamois        0.9996481    360   265   472   491
-# 15 Cdy00011(7)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
-# 16 Cdy00013(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
-# 17 Cdy00020resized.JPG                                                            renard         renard         0.9999999    665   396  1023   556
-# 18 FDC01_point_15-4a79b79d.2_corlier_montlier_2018_7_23_flanc_droit(3)resized.JPG lynx           lynx           0.99994326   704   428   923   564
-# 19 FDC01_point_36.2_evosges_le_col_2017_09_10_flanc_droitresized.JPG              lynx           lynx           0.99999857     0   318   310   565
-# 20 FDC01_point_36.2_evosges_le_col_2017_09_29_cuissegaucheresized.JPG             lynx           lynx           0.99994063     0   330   336   652
-# 21 FDC01_point_36.2_evosges_le_col_2017_10_10_flanc_droitresized.JPG              lynx           lynx           0.99994177   264   346   957   755
-# 22 I__00001(7)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
-# 23 I__00002(7)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
-# 24 I__00003(8)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
-# 25 I__00007(8)resized.JPG                                                         renard         renard         0.9997709      1   392   527   692
-# 26 I__00009(8)resized.JPG                                                         sangliers      NA             NA            NA    NA    NA    NA
-# 27 I__00010(8)resized.JPG                                                         sangliers      sangliers      0.8085136     11   244  1003   762
-# 28 I__00012(6)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
-# 29 I__00012resized.JPG                                                            sangliers      sangliers      0.9999937    422     1  1017   477
-# 30 I__00015(10)resized.JPG                                                        chien          NA             NA            NA    NA    NA    NA
-# 31 I__00015(3)-8907af1cresized.JPG                                                vide           NA             NA            NA    NA    NA    NA
-# 32 I__00015resized.JPG                                                            chevreuil      chevreuil      0.9984863    675   184   934   448
-# 33 I__00016(6)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
-# 34 I__00016resized.JPG                                                            vide           NA             NA            NA    NA    NA    NA
-# 35 I__00017(7)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
-# 36 I__00020(6)resized.JPG                                                         chevreuil      chevreuil      0.9999998    208   128   863   717
-# 37 I__00021resized.JPG                                                            blaireaux      blaireaux      0.9999969    371   339   580   434
-# 38 I__00022(7)resized.JPG                                                         chien          NA             NA            NA    NA    NA    NA
-# 39 I__00023(7)resized.JPG                                                         chat           chat_forestier 0.77948236   739   497  1022   756
-# 40 I__00024(8)resized.JPG                                                         chat           renard         0.96120846   546   387  1022   756
-# 41 I__00024(8)resized.JPG                                                         chat           chamois        0.7607192    555   382  1022   755
-# 42 I__00025(10)resized.JPG                                                        chevreuil      chevreuil      0.9999732    282   217  1020   759
-# 43 I__00026(11)resized.JPG                                                        sangliers      sangliers      0.9359536    473   303  1022   762
-# 44 I__00028resized.JPG                                                            lievre         lièvre         0.99646026   734   301  1022   624
-# 45 I__00028resized.JPG                                                            lievre         lynx           0.88849044   734   301  1022   624
-# 46 I__00033(6)resized.JPG                                                         oiseaux        NA             NA            NA    NA    NA    NA
-# 47 I__00033(9)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
-# 48 I__00049(6)resized.JPG                                                         chat forestier lièvre         0.9782964    145   355   508   689
-# 49 I__00049(6)resized.JPG                                                         chat forestier chat_forestier 0.56414235   143   353   509   690
-# 50 I__00051(10)resized.JPG                                                        lievre         lièvre         0.99998236   281   438   664   725
-# 51 I__00060(10)resized.JPG                                                        humain         NA             NA            NA    NA    NA    NA
+Joining, by = "FileName"
+# A tibble: 51 x 8
+   FileName                                                                       ground_truth   prediction     confidence     x     y     z     t
+   <chr>                                                                          <chr>          <chr>          <chr>      <dbl> <dbl> <dbl> <dbl>
+ 1 1.3D(145)resized.JPG                                                           chamois        chamois        0.99999046    96   190   833   638
+ 2 1.3D(146)resized.JPG                                                           chamois        chamois        0.99999255     0   343   668   744
+ 3 1.3D(189)resized.JPG                                                           chamois        chamois        0.99998736   200   122   849   658
+ 4 1.3D(208)!!ATTENTION2017AULIEUDE2016!!resized.JPG                              cerf           cerf           0.9998793      6     0   973   576
+ 5 Cdy00002(2)resized.JPG                                                         cavalier       NA             NA            NA    NA    NA    NA
+ 6 Cdy00004(4)resized.JPG                                                         renard         renard         0.9788616    524   354   726   474
+ 7 Cdy00004(4)resized.JPG                                                         renard         sangliers      0.51794666   526   353   720   463
+ 8 Cdy00005(4)resized.JPG                                                         chevreuil      chevreuil      0.9999309     64   263   574   584
+ 9 Cdy00005(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
+10 Cdy00007(5)resized.JPG                                                         chat forestier chat_forestier 0.99999195   405   325   636   488
+11 Cdy00008(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
+12 Cdy00008resized.JPG                                                            chevreuil      chamois        0.9990773    507   206   613   364
+13 Cdy00008resized.JPG                                                            chevreuil      chevreuil      0.81188613   507   206   613   364
+14 Cdy00011(2)resized.JPG                                                         chevreuil      chamois        0.9996481    360   265   472   491
+15 Cdy00011(7)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
+16 Cdy00013(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
+17 Cdy00020resized.JPG                                                            renard         renard         0.9999999    665   396  1023   556
+18 FDC01_point_15-4a79b79d.2_corlier_montlier_2018_7_23_flanc_droit(3)resized.JPG lynx           lynx           0.99994326   704   428   923   564
+19 FDC01_point_36.2_evosges_le_col_2017_09_10_flanc_droitresized.JPG              lynx           lynx           0.99999857     0   318   310   565
+20 FDC01_point_36.2_evosges_le_col_2017_09_29_cuissegaucheresized.JPG             lynx           lynx           0.99994063     0   330   336   652
+21 FDC01_point_36.2_evosges_le_col_2017_10_10_flanc_droitresized.JPG              lynx           lynx           0.99994177   264   346   957   755
+22 I__00001(7)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
+23 I__00002(7)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
+24 I__00003(8)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
+25 I__00007(8)resized.JPG                                                         renard         renard         0.9997709      1   392   527   692
+26 I__00009(8)resized.JPG                                                         sangliers      NA             NA            NA    NA    NA    NA
+27 I__00010(8)resized.JPG                                                         sangliers      sangliers      0.8085136     11   244  1003   762
+28 I__00012(6)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
+29 I__00012resized.JPG                                                            sangliers      sangliers      0.9999937    422     1  1017   477
+30 I__00015(10)resized.JPG                                                        chien          NA             NA            NA    NA    NA    NA
+31 I__00015(3)-8907af1cresized.JPG                                                vide           NA             NA            NA    NA    NA    NA
+32 I__00015resized.JPG                                                            chevreuil      chevreuil      0.9984863    675   184   934   448
+33 I__00016(6)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
+34 I__00016resized.JPG                                                            vide           NA             NA            NA    NA    NA    NA
+35 I__00017(7)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
+36 I__00020(6)resized.JPG                                                         chevreuil      chevreuil      0.9999998    208   128   863   717
+37 I__00021resized.JPG                                                            blaireaux      blaireaux      0.9999969    371   339   580   434
+38 I__00022(7)resized.JPG                                                         chien          NA             NA            NA    NA    NA    NA
+39 I__00023(7)resized.JPG                                                         chat           chat_forestier 0.77948236   739   497  1022   756
+40 I__00024(8)resized.JPG                                                         chat           renard         0.96120846   546   387  1022   756
+41 I__00024(8)resized.JPG                                                         chat           chamois        0.7607192    555   382  1022   755
+42 I__00025(10)resized.JPG                                                        chevreuil      chevreuil      0.9999732    282   217  1020   759
+43 I__00026(11)resized.JPG                                                        sangliers      sangliers      0.9359536    473   303  1022   762
+44 I__00028resized.JPG                                                            lievre         lièvre         0.99646026   734   301  1022   624
+45 I__00028resized.JPG                                                            lievre         lynx           0.88849044   734   301  1022   624
+46 I__00033(6)resized.JPG                                                         oiseaux        NA             NA            NA    NA    NA    NA
+47 I__00033(9)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
+48 I__00049(6)resized.JPG                                                         chat forestier lièvre         0.9782964    145   355   508   689
+49 I__00049(6)resized.JPG                                                         chat forestier chat_forestier 0.56414235   143   353   509   690
+50 I__00051(10)resized.JPG                                                        lievre         lièvre         0.99998236   281   438   664   725
+51 I__00060(10)resized.JPG                                                        humain         NA             NA            NA    NA    NA    NA
 ```
 
 On évalue les performances avec script R. 
