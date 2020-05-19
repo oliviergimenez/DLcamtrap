@@ -336,15 +336,11 @@ Les résultats sont téléchargeables [là](https://mycore.core-cloud.net/index.
 
 Un échantillon des photo avec le cadre, l'espèce prédite en haut à gauche du cadre et la confiance :
 
-![](https://github.com/oliviergimenez/DLcamtrap/blob/master/18.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/16.jpg)
-:-------------------------:|:-------------------------:
-![](https://github.com/oliviergimenez/DLcamtrap/blob/master/22.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.jpg)
-:-------------------------:|:-------------------------:
-![](https://github.com/oliviergimenez/DLcamtrap/blob/master/33.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/44.jpg)
-:-------------------------:|:-------------------------:
-![](https://github.com/oliviergimenez/DLcamtrap/blob/master/34.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/6.jpg)
-:-------------------------:|:-------------------------:
-![](https://github.com/oliviergimenez/DLcamtrap/blob/master/39.jpg)  |  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/8.jpg)
+![](https://github.com/oliviergimenez/DLcamtrap/blob/master/18.jpg)  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/16.jpg)
+![](https://github.com/oliviergimenez/DLcamtrap/blob/master/22.jpg)  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.jpg)
+![](https://github.com/oliviergimenez/DLcamtrap/blob/master/33.jpg)  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/44.jpg)
+![](https://github.com/oliviergimenez/DLcamtrap/blob/master/34.jpg)  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/6.jpg)
+![](https://github.com/oliviergimenez/DLcamtrap/blob/master/39.jpg)  ![](https://github.com/oliviergimenez/DLcamtrap/blob/master/8.jpg)
 
 
 Avec qqs dizaines de photos, il est relativement facile d'évaluer les performances (étape suivante) de la classification. Maintenant si on a beaucoup de photos, on aimerait récupérer l'information brute. Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, on utilise un script `Python` `detect2txt.py` écrit par Vincent Miele, et téléchargeable via [ce lien](https://gitlab.com/ecostat/imaginecology/-/raw/master/projects/cameraTrapDetectionWithRetinanet/detect2txt.py?inline=false). J'ai placé ce script dans le répertoire où se trouve `evaluate.py` à savoir `keras-retinanet/keras_retinanet/bin/`. Pour utiliser ce script, il faut l'éditer avec un éditeur texte par exemple, et modifier les 3 lignes suivantes :
