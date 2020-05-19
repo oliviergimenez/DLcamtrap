@@ -431,20 +431,12 @@ Joining, by = "FileName"
 51 I__00060(10)resized.JPG                                                        humain         NA             NA            NA    NA    NA    NA
 ```
 
-On évalue les performances avec script R. 
+Sur notre exemple, avec peu de photos, on peut regarder ce qui se passe. Pour les 4 premières photos, la prédiction coincide avec la vérité avec une grande confiance. Sur la photo 5, on a un cavalier, et cette photo a été écartée à l'étape de la détection puisque les coordonnées sont manquantes. Idem pour toutes les photos avec véhicules, humain, chien, oiseaux ou encore les photos vides. Très bien. La photo 12-13 montre qu'on confond chevreuil et chamois (c'est bien le même cadre, il suffit de regarder les coordonnées). Le message est encore plus clair avec la photo 14. Les photos 18 à 21 montrent que le lynx est bien classifié. La photo 40-41 montre qu'on confond le chat avec renard ou chamois, mais plutôt renard à en jugerpar le degré de confiance. Sur la photo 44-45, on hésite pour le lièvre entre lièvre et lynx, mais quand on regarde le degré de confiance, on penche pour le lièvre. Dans la photo 48-49 on hésite aussi pour le chat forestier entre lièvre et chat forestier, et on se plante si on regarde le degré de confiance puisqu'on prendrait le lièvre. 
 
-(5. Évaluer les performances TP, FN, FP avec script R postprocessML.R)
+On peut formaliser ces calculs d'erreur en distinguant :
+* les faux négatifs quand une espèce présente sur la photo n'est pas détectée ; on peut redécouper en Void si animal pas détecté et False si animal détecté mais mal classifié ; 
+* les vrais positifs quand une espèce présente sur la photo est détecté et bien classifiée ;
+* les faux positifs quand une espèce n'est pas sur une photo mais y est détectée.
 
-/Users/oliviergimenez/Desktop/DLcameratraps/keras-retinanet-master/keras_retinanet/bin/evaluate.py --convert-model --save-path test_pred/ --
+Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script Python detect2.py téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68) qui permet de faire ces calculs. 
 
-
-
-
-
- :
-
--et puis lancer "python3 detect2txt.py"" ; chez moi il faut ajouter le chemin absolu python3 /Users/oliviergimenez/Desktop/DLcameratraps/keras-retinanet-master/keras_retinanet/bin/detect2txt.py et avoir au préalable installer deux librairies manquantes, matplotlib et pandas
-
-Gaspard fournit 2 scripts detect.py et detect2.py en pj. La différence entre les deux fichiers est dans la façon de calculer les faux négatifs. Le script detect.py calcule TP, FN et FP alors que detect2.py permet d'aller un peu plus dans le détail et de séparer les faux négatifs en FNvoid si l'animal n'est pas détecté et FN_false si l'animal a été détecté mais mal classifié. Ça fait suite à votre idée d'ajouter dans le background les classes avec peu de photos pour réduire le nombre de faux positifs. 
-
-Note : le calcul de ces métriques d'erreur ne tiennent pas compte des erreurs faites à l'étape de la détection des objets avec MegaDetector. 
