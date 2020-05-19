@@ -180,21 +180,13 @@ file_list <- list.files(pix_folder, recursive=TRUE, pattern = "*.JPG", full.name
 manual_tags <- read_exif(file_list) %>%
   as_tibble() %>%
   select(FileName, Keywords) %>%
-  unnest(Keywords) %>%
-  filter(!Keywords %in% c('D','46.1','15.1','15.2')) # certains tags ne passent pas bien
+  unnest(Keywords)
 
 # display
 manual_tags
 
-# 46 pix but 47 rows, why?
+# 46 pix 
 manual_tags %>% count(FileName, sort = TRUE)
-
-# pix Cdy00008 (5)resized.JPG has 2 tags, both have to do with humans
-manual_tags %>% filter(FileName == 'Cdy00008 (5)resized.JPG')
-
-# for convenience, let's get rid of 'frequentation humaine' which appears only once
-manual_tags %>% count(Keywords)
-manual_tags <- manual_tags %>% filter(Keywords != 'frequentation humaine')
 
 #-- second, get box coordinates
 
@@ -235,9 +227,9 @@ box_coord <- pix %>%
          ymax = ymin + height,
          category = as.numeric(category)) %>%
   select(name, category, max_det_conf, confidence, xmin, xmax, ymin, ymax) %>%
-  mutate(category = if_else(is.na(category), 0, category),
+  mutate(category = if_else(is.na(category), 0, category), # pix empty
          confidence = if_else(is.na(confidence), 1, confidence))
-  
+
 # display
 box_coord
 
