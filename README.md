@@ -4,7 +4,7 @@ On va utilisé les méthodes de deep learning ou aprentissage profond pour faire
 
 Passons à nos affaires. Comme exemple, j'ai assemblé un ensemble de 46 photos annotées à la main téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/ub5iTNSktszLvCv). Attention, bien s'assurer qu'il n'y a pas d'espace dans le nom des fichiers, et que les étiquettes (tags) ne comportent pas d'erreurs (sous Mac, on peut utiliser Photo pour modifier ces tags). L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier pix/ dont le chemin absolu est /Users/oliviergimenez/Desktop/. 
 
-Je voudrais évaluer les performances (vrais positifs, faux négatifs et faux positifs) du modèle entrainé par Gaspard Dussert sur un échantillon des photos du Jura annotées par Anna Chaine à reconnaître les espèces qui sont sur ces photos, et en particulier lynx, chamois et chevreuils. 
+On souhaite évaluer les performances (vrais positifs, faux négatifs et faux positifs) du modèle entrainé par Gaspard Dussert sur un échantillon des photos du Jura annotées par Anna Chaine à reconnaître les espèces qui sont sur ces photos, et en particulier lynx, chamois et chevreuils. 
 
 Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. La même idée est appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple [celui-ci](https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674). 
 
