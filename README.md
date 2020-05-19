@@ -55,11 +55,17 @@ for (i in 1:length(file_list)){
 }
 ```
 
+Si l'on inspecte les photos redimensionnées, on s'aperçoit que leur poids a été divisé par 5-10 en gros, d'1-1.5Mo en moyenne, à 200Ko en moyenne. 
+
 ## Etape 2. Détection. 
 
 On passe maintenant à la détection des objets dans les photos. Pour ce faire, on utilise [MegaDetector](https://github.com/microsoft/CameraTraps#overview) pour se faciliter la vie. Cet algorithme va détecter les objets sur les photos et leur associer un cadre, une boîte. 
 
-Pour ce faire, il faut d'abord télécharger [CameraTraps](https://github.com/microsoft/CameraTraps). Puis, depuis un Terminal, se mettre dans le répertoire CameraTraps/ et suivre [les instructions d'installation](https://github.com/microsoft/CameraTraps#initial-setup). Si on n'a pas de GPU, il faut modifier le fichier dans le fichier environment-detector.yml en commentant la ligne 
+Pour ce faire, il faut d'abord télécharger depuis [CameraTraps](https://github.com/microsoft/CameraTraps) le fichier zippé, le dézipper, puis changer le nom ddu répertoire en `CameraTraps`. Puis, depuis un Terminal, se mettre dans le répertoire `CameraTraps/` et suivre [les instructions d'installation](https://github.com/microsoft/CameraTraps#initial-setup). En gros cela consiste à taper les deux lignes de commande 
+```conda env create --file environment.yml``` 
+et 
+```conda env create --file environment-detector.yml```. 
+Attention, si on n'a pas de GPU, il faut modifier le fichier dans le fichier environment-detector.yml en commentant la ligne 
 ```
 tensorflow-gpu>=1.9.0, <1.15.0
 ```
