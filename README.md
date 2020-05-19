@@ -306,7 +306,7 @@ On fait la classification sur les photos qui ont déjà le cadre de la détectio
 /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluate.py --convert-model --save-path pix_pred/ --score-threshold 0.5 csv test.csv class.csv resnet50_csv_10.h5
 ```
 
-On peut voir les photos classifiées dans le répertoire `pix_pred/` avec le cadre en vert de l'étape détection par MegaDetector (qui est systématiquement trop bas, c'est un bug dans mon programme `R` au-dessus que je suis en train de corriger) et celui en bleu de la classification par `RetinaNet`. Les photos peuvent être téléchargées [ici](https://mycore.core-cloud.net/index.php/s/gIkolFLoNuiT1lM). 
+On peut voir les photos classifiées dans le répertoire `pix_pred/` avec le cadre en vert de l'étape détection par `MegaDetector` (qui est systématiquement trop bas, c'est un bug dans mon programme `R` au-dessus que je suis en train de corriger) et celui en bleu de la classification par `RetinaNet`. Les photos peuvent être téléchargées [ici](https://mycore.core-cloud.net/index.php/s/ir7Wh6Kl1Nokaus). 
 
 On peut faire le même exercice, mais en ne supprimant aucune photo, en ne gardant que le tag manuel, et en voyant ce que `RetinaNet` donne. Dans le script `R` précédent, modifier la dernière partie pour avoir :
 
@@ -327,12 +327,12 @@ box_coord %>%
             na = '')
 ```
 
-Le fichier test2.csv est [ici](https://mycore.core-cloud.net/index.php/s/XYEoMF0Puz6FMqV). Puis dans le Terminal, faire :
+Le fichier test2.csv est [ici](https://mycore.core-cloud.net/index.php/s/DIZdCuAVrauemvm). Puis dans le Terminal, faire :
 ```
 python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluate.py --convert-model --save-path pix_pred2/ --score-threshold 0.5 csv test2.csv class.csv resnet50_csv_10.h5
 ```
 
-Les résultats sont téléchargeables [là](https://mycore.core-cloud.net/index.php/s/z2gcio7JgXGd7jt).
+Les résultats sont téléchargeables [là](https://mycore.core-cloud.net/index.php/s/AsGtVUImKSPRMCI).
 
 Avec qqs dizaines de photos, il est relativement facile d'évaluer les performances (étape suivante) de la classification. Maintenant si on a beaucoup de photos, on aimerait récupérer l'information brute. Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, on utilise un script `Python` `detect2txt.py` écrit par Vincent Miele, et téléchargeable via [ce lien](https://gitlab.com/ecostat/imaginecology/-/raw/master/projects/cameraTrapDetectionWithRetinanet/detect2txt.py?inline=false). J'ai placé ce script dans le répertoire où se trouve `evaluate.py` à savoir `keras-retinanet/keras_retinanet/bin/`. Pour utiliser ce script, il faut l'éditer avec un éditeur texte par exemple, et modifier les 3 lignes suivantes :
 ```
