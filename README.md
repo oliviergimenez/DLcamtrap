@@ -11,7 +11,7 @@ Pour évaluer ces performances, on va se concentrer sur :
 * les **faux positifs ou FP** : le modèle prédit la présence de l'espèce d'intérêt, mais celle-ci n'est en fait pas présente sur la photo ;
 * les **faux négatifs ou FN** : le modèle prédit que l'espèce d'intérêt n'est pas présente sur la photo alors que celle-ci est bien présente ; on pourra séparer les FN en FN_void Fsi l'espèce n'a pas été détectée, et FN_false si l'espèce a été détectée mais mal classifiée. 
 
-Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. La même idée est appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple [celui-ci](https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674). 
+Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts `R` et `Python`. On applique une procédure en 2 étapes, détection puis classification. La même idée est appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple [celui-ci](https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674). 
 
 Le gros du boulot (en particulier l'entrainement du modèle) a été fait par Gaspard Dussert en stage en 2019 avec Vincent Miele. Plus de détails [sur le site dédié du GdR EcoStat](https://ecostat.gitlab.io/imaginecology/).
 
@@ -89,7 +89,7 @@ puis
 conda activate cameratraps
 ```
 
-Enfin, on met le chemin Python au répertoire racine :  
+Enfin, on met le chemin `Python` au répertoire racine :  
 ```
 export PYTHONPATH=/Users/oliviergimenez/Desktop/CameraTraps
 ```
@@ -331,7 +331,7 @@ python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluat
 
 Les résultats sont téléchargeables [là](https://mycore.core-cloud.net/index.php/s/z2gcio7JgXGd7jt).
 
-Avec qqs dizaines de photos, il est relativement facile d'évaluer les performances (étape suivante) de la classification. Maintenant si on a beaucoup de photos, on aimerait récupérer l'information brute. Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, on utilise un script Python `detect2txt.py` écrit par Vincent Miele, et téléchargeable via [ce lien](https://gitlab.com/ecostat/imaginecology/-/raw/master/projects/cameraTrapDetectionWithRetinanet/detect2txt.py?inline=false). J'ai placé ce script dans le répertoire où se trouve `evaluate.py` à savoir `keras-retinanet/keras_retinanet/bin/`. Pour utiliser ce script, il faut l'éditer avec un éditeur texte par exemple, et modifier les 3 lignes suivantes :
+Avec qqs dizaines de photos, il est relativement facile d'évaluer les performances (étape suivante) de la classification. Maintenant si on a beaucoup de photos, on aimerait récupérer l'information brute. Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, on utilise un script `Python` `detect2txt.py` écrit par Vincent Miele, et téléchargeable via [ce lien](https://gitlab.com/ecostat/imaginecology/-/raw/master/projects/cameraTrapDetectionWithRetinanet/detect2txt.py?inline=false). J'ai placé ce script dans le répertoire où se trouve `evaluate.py` à savoir `keras-retinanet/keras_retinanet/bin/`. Pour utiliser ce script, il faut l'éditer avec un éditeur texte par exemple, et modifier les 3 lignes suivantes :
 ```
 model_path = "retinanet_tutorial_best_weights.h5" # model file (must be based on RESNET50)
 test_dir = "test" # test directory with the target images
@@ -522,14 +522,16 @@ python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect.
 
 On peut jeter un coup d'oeil au résultat [là](https://mycore.core-cloud.net/index.php/s/GnJwuAnI2NUyin6).
 
-Si l'on n'est pas forcément intéressé par le détail dans les faux négatifs, on peut utiliser un autre script `Python`, `detect2.py`, téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68), et qui permet de mettre sur les photos le cadre avec l'espèce vérité et le cadre avec l'espèce prédite, et de créer trois nouveaux répertoires qui contiennent les photos classées en TP, FN et FP, permettant ainsi d'aller regarder en détail les situations qui génèrent les faux négatifs et faux positifs. Ces répertoires se trouvent dans le répertoire qui contient les photos analysées, dans `pix_resized/`.
+On note que sur le lynx, on est tout bon. Sur chevreuil on a qqs faux négatifs, et sur chamois qqs faux positifs.
+
+Si l'on n'est pas intéressé par le détail dans les faux négatifs, on peut utiliser un autre script `Python`, `detect2.py`, téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68), et qui permet de mettre sur les photos le cadre avec l'espèce vérité et le cadre avec l'espèce prédite, et de créer trois nouveaux répertoires qui contiennent les photos classées en TP, FN et FP, permettant ainsi d'aller regarder en détail les situations qui génèrent les faux négatifs et faux positifs. Ces répertoires se trouvent dans le répertoire qui contient les photos analysées, dans `pix_resized/`.
 
 Avant de lancer le script, il faut modifier les deux mêmes lignes que pour le script `detect.py`. Puis on le lance via :
 ```
 python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2.py >> perf2.txt
 ```
 
-On peut jeter un coup d'oeil à perf2.txt : 
+On peut jeter un coup d'oeil à `perf2.txt` téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Ex9KJOkdB8nClnH) : 
 ```
           species  TP  FP  FN
 0       blaireaux   1   0   0
