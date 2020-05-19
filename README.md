@@ -444,14 +444,14 @@ Joining, by = "FileName"
 
 Sur notre exemple, avec peu de photos, on peut regarder ce qui se passe. Pour les 4 premières photos, la prédiction coincide avec la vérité avec une grande confiance. Sur la photo 5, on a un cavalier, et cette photo a été écartée à l'étape de la détection puisque les coordonnées sont manquantes. Idem pour toutes les photos avec véhicules, humain, chien, oiseaux ou encore les photos vides. Très bien. La photo 11-12 montre qu'on confond chevreuil et chamois (c'est bien le même cadre, il suffit de regarder les coordonnées). Le message est encore plus clair avec la photo 13. Les photos 17 à 20 montrent que le lynx est bien classifié. La photo 40-41 montre qu'on confond le chat avec renard ou chamois, mais plutôt renard à en jugerpar le degré de confiance. Sur la photo 44-45, on hésite pour le lièvre entre lièvre et lynx, mais quand on regarde le degré de confiance, on penche pour le lièvre. Dans la photo 48-49 on hésite aussi pour le chat forestier entre lièvre et chat forestier, et on se plante si on regarde le degré de confiance puisqu'on prendrait le lièvre. 
 
-On peut formaliser ces calculs d'erreur en distinguant FN, TP et FP. On rappelle que 
+On peut formaliser ces calculs d'erreur en distinguant FN, TP et FP. On rappelle que :
 * un faux négatif FN correspond à une espèce présente sur la photo qui n'est pas détectée ; on peut redécouper en Void si animal pas détecté et False si animal détecté mais mal classifié ; 
 * un vrai positif TP correspond à une espèce présente sur la photo qui est détectée et bien classifiée ;
 * un faux positif FP correspond à une espèce qui n'est pas sur une photo mais qui y est détectée.
 
-Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script Python detect.py téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/62ORvHlZEpNdA5y) qui permet de faire ces calculs. Je mets ce script dans /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/ et il ne manque plus qu'à modifier deux lignes du script. 
+Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script `detect.py` téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/62ORvHlZEpNdA5y) qui permet de faire ces calculs. Je mets ce script dans `/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/` et il ne manque plus qu'à modifier deux lignes du script. 
 
-Au début, modifier la ligne 
+Au début, modifier la ligne
 ```
 model_path = "snapshots_all/resnet50_csv_10.h5"
 ```
@@ -522,9 +522,9 @@ python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect.
 
 On peut jeter un coup d'oeil au résultat [là](https://mycore.core-cloud.net/index.php/s/GnJwuAnI2NUyin6).
 
-Si l'on n'est pas forcément intéressé par le détail dans les faux négatifs, on peut utiliser un autre script Python, detect2.py, téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68), et qui permet de mettre sur les photos le cadre avec l'espèce vérité et le cadre avec l'espèce prédite, et de créer trois nouveaux répertoires qui contiennent les photos classées en TP, FN et FP, permettant ainsi d'aller regarder en détail les situations qui génèrent les faux négatifs et faux positifs. Ces répertoires se trouvent dans le répertoire qui contient les photos analysées, dans pix_resized/ ici.
+Si l'on n'est pas forcément intéressé par le détail dans les faux négatifs, on peut utiliser un autre script `Python`, `detect2.py`, téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68), et qui permet de mettre sur les photos le cadre avec l'espèce vérité et le cadre avec l'espèce prédite, et de créer trois nouveaux répertoires qui contiennent les photos classées en TP, FN et FP, permettant ainsi d'aller regarder en détail les situations qui génèrent les faux négatifs et faux positifs. Ces répertoires se trouvent dans le répertoire qui contient les photos analysées, dans `pix_resized/`.
 
-Avant de lancer le script, il faut modifier les deux mêmes lignes que pour le script detect.py. Puis on le lance via :
+Avant de lancer le script, il faut modifier les deux mêmes lignes que pour le script `detect.py`. Puis on le lance via :
 ```
 python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2.py >> perf2.txt
 ```
@@ -532,44 +532,42 @@ python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2
 On peut jeter un coup d'oeil à perf2.txt : 
 ```
           species  TP  FP  FN
-0       blaireaux   0   1   0
+0       blaireaux   1   0   0
 1         chamois   3   2   0
 2  chat forestier   1   1   1
-3       chevreuil   2   2   0
+3       chevreuil   4   0   2
 4          lièvre   0   3   0
 5            lynx   4   0   0
-6          renard   1   3   0
+6          renard   3   1   0
 7       sangliers   4   0   0
 8            cerf   1   0   0
 
 Images source de FP par classe :
-46.1 5
-15.1 3
-chat 2
-lievre 1
+chevreuil 2
+lievre 2
 chat forestier 1
+chat 2
 
 Nombre total d'image par classe:
-vide 5
-46.1 5
-lynx 4
-sangliers 4
-15.1 4
-chevreuil 2
-vehicule 4
-chat 2
-cerf 1
-chat forestier 2
-lievre 1
-chien 2
 humain 4
-chamois 3
-oiseaux 1
-renard 1
+renard 3
+chat forestier 2
+chevreuil 6
 cavalier 1
+vehicule 4
+chamois 3
+cerf 1
+oiseaux 1
+vide 6
+lynx 4
+chien 2
+lievre 2
+sangliers 4
+chat 2
+blaireaux 1
 ```
 
-Au passage, ces scripts detect.py et detect2.py font en un coup les étapes 2, 3 et 4. 
+Au passage, ces scripts `detect.py` et `detect2.py` font en un coup les étapes 2, 3 et 4. 
 
 ## La suite ? 
 
