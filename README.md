@@ -28,7 +28,7 @@ La dernière étape a donc été d'ajouter dans le background les classes avec p
 
 ## Etape 1. Redimensionnement.
 
-Passons maintenant au coeur de l'exercice, la classification automatique des 46 photos. On redimensionne d'abord les images. Pour ce faire, on applique ces quelques lignes de code dans `R`. On utilise le package magical qui appelle l'excellent petit logiciel `imagemagick`. Les photos contenues dans le répertoire `/Users/oliviergimenez/Desktop/pix` sont redimensionnées en 1024x1024 dans le répertoire `/Users/oliviergimenez/Desktop/pix_resized`. Les chemins sont à modifier selon les goûts. Le nom de chaque photo est affublé d'un resized pour les différentier des photos originales. Le résultat est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/pIanPETOyYIPwnN). 
+Passons maintenant au coeur de l'exercice, la classification automatique des 46 photos. On redimensionne d'abord les images. Pour ce faire, on applique ces quelques lignes de code dans `R`. On utilise le package magical qui appelle l'excellent petit logiciel `imagemagick`. Les photos contenues dans le répertoire `/Users/oliviergimenez/Desktop/pix` sont redimensionnées en 1024x1024 dans le répertoire `/Users/oliviergimenez/Desktop/pix_resized`. Les chemins sont à modifier selon les goûts. Le nom de chaque photo est affublé d'un resized pour les différentier des photos originales. Le résultat est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/qFFRY30j3C2rCtx). 
 
 ```
 # load package to make R talk to imagemagick
@@ -61,7 +61,7 @@ Si l'on inspecte les photos redimensionnées, on s'aperçoit que leur poids a é
 
 On passe maintenant à la détection des objets dans les photos. Pour ce faire, on utilise [MegaDetector](https://github.com/microsoft/CameraTraps#overview) pour se faciliter la vie. Cet algorithme va détecter les objets sur les photos et leur associer un cadre, une boîte. 
 
-Pour ce faire, il faut d'abord télécharger depuis [CameraTraps](https://github.com/microsoft/CameraTraps) le fichier zippé, le dézipper, puis changer le nom ddu répertoire en `CameraTraps`. Puis, depuis un Terminal, se mettre dans le répertoire `CameraTraps/` et suivre [les instructions d'installation](https://github.com/microsoft/CameraTraps#initial-setup). En gros cela consiste à taper les deux lignes de commande 
+Pour ce faire, il faut d'abord télécharger depuis [CameraTraps](https://github.com/microsoft/CameraTraps) le fichier zippé, le dézipper, puis changer le nom du répertoire en `CameraTraps`. Puis, depuis un Terminal, se mettre dans le répertoire `CameraTraps/` et suivre [les instructions d'installation](https://github.com/microsoft/CameraTraps#initial-setup). En gros cela consiste à taper les deux lignes de commande 
 ```conda env create --file environment.yml``` 
 et 
 ```conda env create --file environment-detector.yml```. 
@@ -75,10 +75,10 @@ en
 ```
 et ajouter la ligne
 ```
-tensorflow=1.14
+tensorflow==1.14
 ```
 
-Il se peut qu'il faille installer des modules, dans ce cas, utiliser pip install dans le Terminal. 
+Il se peut qu'il faille installer des modules, dans ce cas, utiliser `pip install` dans le Terminal. 
 
 Ensuite, dans le Terminal, faire 
 ```
@@ -110,7 +110,7 @@ Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo tra
 
 ![detections](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.3%20d%20(145)resized_detections.jpg)
 
-Ne pas oublier de supprimer la photo avec détection si l'on passe par cette étape, en l'occurrence `1.3d(145)resized_detections.jpg`.
+Ne pas oublier de supprimer la photo avec détection si l'on passe par cette étape, en l'occurrence `1.3d(145)resized_detections.jpg`, sinon elle serait traitée dans les étapes suivantes. 
 
 ### b. On traite toutes les photos du dossier pix_resized. 
 
@@ -120,7 +120,7 @@ Il suffit de taper en prenant garder de spécifier les bons chemins :
 python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /Users/oliviergimenez/Desktop/megadetector_v3.pb --image_dir /Users/oliviergimenez/Desktop/pix_resized/
 ```
 
-Les photos avec cadre sont ajoutées dans le même répertoire pix_resized, leur nom est modifié avec l'ajout de 'detections' pour signifier qu'elles ont été traitées. Les photos avec détections peuvent être récupérées [ici](https://mycore.core-cloud.net/index.php/s/nMCUzlbSxR6pho9). Si pour les animaux, le taux de succès est de 100%, pour les véhicules, il est de 0%, et pour les humains ce taux est élevé, mais pas de 100%. Pour les photos vides, pas de faux positifs, ie pas de cadre là où pas d'objets. Vu notre objectif, celui de travailler sur les interactions entre lynx, chamois, et chevreuils, le fait de détecter tous les animaux, et de ne pas mettre des cadre là où il n'y a pas d'animaux, nous semble prometteur. On continue.
+Les photos avec cadre sont ajoutées dans le même répertoire pix_resized, leur nom est modifié avec l'ajout de 'detections' pour signifier qu'elles ont été traitées. Les photos avec détections peuvent être récupérées [ici](https://mycore.core-cloud.net/index.php/s/nj1NHAl6LDzt34y). Si pour les animaux, le taux de succès est de 100%, pour les véhicules, il est de 0%, et pour les humains ce taux est élevé, mais pas de 100%. Pour les photos vides, pas de faux positifs, i.e. pas de cadre là où pas d'objets. Vu notre objectif, celui de travailler sur les interactions entre lynx, chamois, et chevreuils, le fait de détecter tous les animaux, et de ne pas mettre des cadres là où il n'y a pas d'animaux, nous semble prometteur. On continue.
 
 ### c. On récupère l'info dans un fichier. 
 
@@ -132,7 +132,7 @@ python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector_batch
 
 Attention, avant de lancer la commande au-dessus, transférer les 46 photos avec objets encadrés obtenus au point b. dans un autre répertoire, par exemple pix_resized_detections, sinon l'étape c. portera sur les 92 photos.
 
-On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. Ce fichier est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/vIIezUrWq7qNYFk). On peut voir des blocs, chaque bloc correspondant au traitement d'une image. Par exemple : 
+On peut ouvrir le fichier json ainsi créé avec un éditeur de texte. Ce fichier est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/IoXAAw4p4JlsrOx). On peut voir des blocs, chaque bloc correspondant au traitement d'une image. Par exemple : 
 
 ``` {
    "file": "/Users/oliviergimenez/Desktop/pix_resized/I__00001(7)resized.JPG",
@@ -156,7 +156,7 @@ On a le nom de l'image, la catégorie de l'objet détecté (0 = vide, 1 = animal
 
 ## Etape 3. Métadonnées test. 
 
-Avant de passer à la classification des objet détectés, il nous faut créer un fichier test.csv qui contient le nom du fichier photo, les coordonnées du cadre de l'objet détecté (données par MegaDetector à l'étape 2) et le nom de l'espèce détectée (tag manuel). Pour ce faire, il faut d'abord récupérer les tags manuels dans les métadonnées des photos, puis récupérer les coordonnées des boîtes créées à l'étape 2 de détection, assembler ces deux fichiers, puis on stocke le tout dans un fichier csv. 
+Avant de passer à la classification des objet détectés, il nous faut créer un fichier `test.csv` qui contient le nom du fichier photo, les coordonnées du cadre de l'objet détecté (données par `MegaDetector` à l'étape 2) et le nom de l'espèce détectée (tag manuel). Pour ce faire, il faut d'abord récupérer les tags manuels dans les métadonnées des photos, puis récupérer les coordonnées des boîtes créées à l'étape 2 de détection, assembler ces deux fichiers, puis on stocke le tout dans un fichier csv. 
 
 ```
 # load package to manipulate data
@@ -253,20 +253,18 @@ box_coord %>%
          xmax = floor(1024 * xmax),
          ymin = floor(1024 * ymin),
          ymax = floor(1024 * ymax)) %>%
-  filter(! Keywords %in% c('cavalier','vehicule','humain','chien','vide','oiseaux')) %>%
-  mutate(Keywords = fct_recode(Keywords, 'lièvre' = 'lievre')) %>%
-  mutate(Keywords = fct_recode(Keywords, 'chat forestier' = 'chat')) %>%
+  filter(! Keywords %in% c('cavalier','vehicule','humain','chien','vide','oiseaux','chat')) %>%
   write_csv(paste0(json_folder,'test.csv'), 
             col_names = FALSE)
 ```
 
-Le fichier `test.csv` ainsi créé peut être récupéré [là](https://mycore.core-cloud.net/index.php/s/5PYIlSqpzzcC5RX). A noter qu'on a supprimé de ce fichier toutes les photos dans lesquelles aucun objet n'a été détecté (pas de boîte) et celles qui ne correspondent pas à une catégorie entrainée. 
+Le fichier `test.csv` ainsi créé peut être récupéré [là](https://mycore.core-cloud.net/index.php/s/DRhKjsyd5HTMogH). A noter qu'on a supprimé de ce fichier toutes les photos dans lesquelles aucun objet n'a été détecté (pas de boîte) et celles qui ne correspondent pas à une catégorie entrainée. 
 
 ## Etape 4. Classification. 
 
 Pour classifier nos photos avec le modèle entrainé sur les photos du Jura taggées par Anna Chaine, on suit les étapes données [ici](https://gitlab.com/ecostat/imaginecology/-/tree/master/projects/cameraTrapDetectionWithRetinanet/#2-installation-of-retinanet). Le modèle déjà entrainé est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Prj6xeu0GqNWaXB), son petit nom est `resnet50_csv_10.h5`. 
 
-Il nous faut le fichier [`class.csv`](https://mycore.core-cloud.net/index.php/s/gJkqIMK92ZyDFvK) qui contient les espèces sur lesquelles on a entrainé l'algorithme. On a déjà le fichier `test.csv` créé à l'étape précédente. 
+Il nous faut le fichier [`class.csv`](https://mycore.core-cloud.net/index.php/s/1VjoUM7Ds8tZ0kQ) qui contient les espèces sur lesquelles on a entrainé l'algorithme. On a déjà le fichier `test.csv` créé à l'étape précédente. 
 
 Les étapes sont les suivantes pour la classification sont les suivantes : 
 
