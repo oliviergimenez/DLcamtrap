@@ -89,6 +89,11 @@ puis
 conda activate cameratraps
 ```
 
+Enfin, on met le chemin Python au répertoire racine :  
+```
+export PYTHONPATH=/Users/oliviergimenez/Desktop/CameraTraps
+```
+
 Avant de se lancer, il faut récupérer le modèle megadetector_v3.pb pour la détection [ici](https://lilablobssc.blob.core.windows.net/models/camera_traps/megadetector/megadetector_v3.pb). 
 
 On est prêt à utiliser MegaDetector. Trois options s'offrent à nous. 
@@ -104,11 +109,6 @@ python /Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py /U
 Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo traitée, ainsi que la catégorie de l'objet détecté et un degré de confiance :
 
 ![detections](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.3%20d%20(145)resized_detections.jpg)
-
-Avant de lancer la commande au-dessus, on met le chemin Python au répertoire racine :  
-```
-export PYTHONPATH=/Users/oliviergimenez/Desktop/CameraTraps
-```
 
 ### b. On traite toutes les photos du dossier pix_resized. 
 
