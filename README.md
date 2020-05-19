@@ -105,23 +105,10 @@ Le traitement prend quelques secondes. Un cadre a été ajouté sur la photo tra
 
 ![detections](https://github.com/oliviergimenez/DLcamtrap/blob/master/1.3%20d%20(145)resized_detections.jpg)
 
-J'ai eu une erreur quand j'ai lancé la ligne de commande ci-dessus qui disait : 
+Avant de lancer la commande au-dessus, on met le chemin Python au répertoire racine :  
 ```
-Traceback (most recent call last):
-  File "/Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py", line 54, in <module>
-    from ct_utils import truncate_float
-ModuleNotFoundError: No module named 'ct_utils'
+export PYTHONPATH=/Users/oliviergimenez/Desktop/CameraTraps
 ```
-
-J'ai copié et collé le script `ct_utils` de `/Users/oliviergimenez/Desktop/CameraTraps` vers `/Users/oliviergimenez/Desktop/CameraTraps/detection`. J'ai alors encore eu une erreur avec le message : 
-```
-Traceback (most recent call last):
-  File "/Users/oliviergimenez/Desktop/CameraTraps/detection/run_tf_detector.py", line 55, in <module>
-    import visualization.visualization_utils as viz_utils
-ModuleNotFoundError: No module named 'visualization'
-```
-
-J'ai installé `freetype` et `pkg-config` via un `brew install`. 
 
 ### b. On traite toutes les photos du dossier pix_resized. 
 
