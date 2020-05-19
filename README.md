@@ -377,7 +377,7 @@ manual_tags %>% left_join(classif) %>% print(n=Inf)
 # # A tibble: 51 x 8
 # FileName                                                                       Keywords       species        confidence     x     y     z     t
 # <chr>                                                                          <chr>          <chr>          <chr>      <dbl> <dbl> <dbl> <dbl>
-#   1 1.3D(145)resized.JPG                                                           chamois        chamois        0.99999046    96   190   833   638
+# 1 1.3D(145)resized.JPG                                                           chamois        chamois        0.99999046    96   190   833   638
 # 2 1.3D(146)resized.JPG                                                           chamois        chamois        0.99999255     0   343   668   744
 # 3 1.3D(189)resized.JPG                                                           chamois        chamois        0.99998736   200   122   849   658
 # 4 1.3D(208)!!ATTENTION2017AULIEUDE2016!!resized.JPG                              cerf           cerf           0.9998793      6     0   973   576
