@@ -280,9 +280,9 @@ et
 pip install . --user
 ```
 
-On peut vérifier le fichier des annotations qu'on a créé à l'étape précédente :
+On peut vérifier le fichier des annotations qu'on a créé à l'étape précédente. Se replacer dans le répertoire où se trouvent les fichiers `test.csv`, `class.csv` et le modèle entrainé, et faire :
 ```
-/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/debug.py --annotations csv test.csv class.csv
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/debug.py --annotations csv test.csv class.csv
 ```
 
 Si on obtient ModuleNotFoundError: No module named 'keras_retinanet.utils.compute_overlap', on peut appliquer la commande suivante pour régler le problème dans le répertoire où se trouve setup.py :
@@ -294,7 +294,7 @@ python setup.py build_ext --inplace
 On recommence : 
 ```
 cd ..
-/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/debug.py --annotations csv test.csv class.csv
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/debug.py --annotations csv test.csv class.csv
 ```
 
 On fait la classification sur les photos qui ont déjà le cadre de la détection : 
@@ -303,9 +303,9 @@ On fait la classification sur les photos qui ont déjà le cadre de la détectio
 /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluate.py --convert-model --save-path pix_pred/ --score-threshold 0.5 csv test.csv class.csv resnet50_csv_10.h5
 ```
 
-On peut voir les photos classifiées dans le répertoire pix_pred/ avec le cadre en vert de l'étape détection par MegaDetector (qui est systématiquement trop bas) et celui en bleu de la classification par RetinaNet. Les photos peuvent être téléchargées [ici](https://mycore.core-cloud.net/index.php/s/gIkolFLoNuiT1lM). 
+On peut voir les photos classifiées dans le répertoire `pix_pred/` avec le cadre en vert de l'étape détection par MegaDetector (qui est systématiquement trop bas, c'est un bug dans mon programme `R` au-dessus que je suis en train de corriger) et celui en bleu de la classification par `RetinaNet`. Les photos peuvent être téléchargées [ici](https://mycore.core-cloud.net/index.php/s/gIkolFLoNuiT1lM). 
 
-On peut faire le même exercice, mais en ne supprimant aucun photo, en ne gardant que le tag manuel, et en voyant ce que RetinaNet donne. Dans le script R précédent, modifier la dernière partie pour avoir :
+On peut faire le même exercice, mais en ne supprimant aucune photo, en ne gardant que le tag manuel, et en voyant ce que `RetinaNet` donne. Dans le script `R` précédent, modifier la dernière partie pour avoir :
 
 ```
 box_coord %>% 
@@ -326,12 +326,12 @@ box_coord %>%
 
 Le fichier test2.csv est [ici](https://mycore.core-cloud.net/index.php/s/XYEoMF0Puz6FMqV). Puis dans le Terminal, faire :
 ```
-/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluate.py --convert-model --save-path pix_pred2/ --score-threshold 0.5 csv test2.csv class.csv resnet50_csv_10.h5
+python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/evaluate.py --convert-model --save-path pix_pred2/ --score-threshold 0.5 csv test2.csv class.csv resnet50_csv_10.h5
 ```
 
 Les résultats sont téléchargeables [là](https://mycore.core-cloud.net/index.php/s/z2gcio7JgXGd7jt).
 
-Avec qqs dizaines de photos, il est relativement facile d'évaluer les performances (étape suivante) de la classification. Maintenant si on a beaucoup de photos, on aimerait récupérer l'information brute. Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, on utilise un script Python écrit par Vincent Miele, et téléchargeable via [ce lien](https://gitlab.com/ecostat/imaginecology/-/raw/master/projects/cameraTrapDetectionWithRetinanet/detect2txt.py?inline=false). J'ai placé ce script dans le répertoire où se trouve evaluate.py à savoir keras-retinanet/keras_retinanet/bin/. Pour utiliser ce script, il faut l'éditer avec un éditeur texte par exemple, et modifier les 3 lignes suivantes :
+Avec qqs dizaines de photos, il est relativement facile d'évaluer les performances (étape suivante) de la classification. Maintenant si on a beaucoup de photos, on aimerait récupérer l'information brute. Pour afficher à l'écran (dans le Terminal) le nom de la photo, l'espèce détectée, la précision, et les coordonnées de la boîte, on utilise un script Python `detect2txt.py` écrit par Vincent Miele, et téléchargeable via [ce lien](https://gitlab.com/ecostat/imaginecology/-/raw/master/projects/cameraTrapDetectionWithRetinanet/detect2txt.py?inline=false). J'ai placé ce script dans le répertoire où se trouve `evaluate.py` à savoir `keras-retinanet/keras_retinanet/bin/`. Pour utiliser ce script, il faut l'éditer avec un éditeur texte par exemple, et modifier les 3 lignes suivantes :
 ```
 model_path = "retinanet_tutorial_best_weights.h5" # model file (must be based on RESNET50)
 test_dir = "test" # test directory with the target images
@@ -353,11 +353,11 @@ Les résultats s'affichent à l'écran, avec le nom de fichier, l'espèce identi
 ```
 python /Users/oliviergimenez/Desktop/keras-retinanet-master/keras_retinanet/bin/detect2txt.py >> classif_pix.txt
 ```
-avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/nQZOyFG3bxVAzpW). A noter que dans le nom des fichiers, il y a des espaces, parfois plusieurs par fichier, je les ai enlevés à la main ici. J'aurais du le faire au tout début, sous R par exemple, en utilisant str_remove_all().  
+avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/nQZOyFG3bxVAzpW). A noter que dans le nom des fichiers, il y a des espaces, parfois plusieurs par fichier, je les ai enlevés à la main ici. J'aurais du le faire au tout début, sous `R` par exemple, en utilisant `str_remove_all()`.  
 
 ## Etape 5. Evaluation. 
 
-Pour évaluer la qualité de la classification, on compare les tags manuels au catégories prédites par l'algorithme. On fait ça sous R : 
+Pour évaluer la qualité de la classification, on compare les tags manuels au catégories prédites par l'algorithme. On fait ça sous `R` : 
 
 ```
 # load suite of packages to manage/visualise data
@@ -453,10 +453,10 @@ Joining, by = "FileName"
 
 Sur notre exemple, avec peu de photos, on peut regarder ce qui se passe. Pour les 4 premières photos, la prédiction coincide avec la vérité avec une grande confiance. Sur la photo 5, on a un cavalier, et cette photo a été écartée à l'étape de la détection puisque les coordonnées sont manquantes. Idem pour toutes les photos avec véhicules, humain, chien, oiseaux ou encore les photos vides. Très bien. La photo 12-13 montre qu'on confond chevreuil et chamois (c'est bien le même cadre, il suffit de regarder les coordonnées). Le message est encore plus clair avec la photo 14. Les photos 18 à 21 montrent que le lynx est bien classifié. La photo 40-41 montre qu'on confond le chat avec renard ou chamois, mais plutôt renard à en jugerpar le degré de confiance. Sur la photo 44-45, on hésite pour le lièvre entre lièvre et lynx, mais quand on regarde le degré de confiance, on penche pour le lièvre. Dans la photo 48-49 on hésite aussi pour le chat forestier entre lièvre et chat forestier, et on se plante si on regarde le degré de confiance puisqu'on prendrait le lièvre. 
 
-On peut formaliser ces calculs d'erreur en distinguant :
-* les faux négatifs quand une espèce présente sur la photo n'est pas détectée ; on peut redécouper en Void si animal pas détecté et False si animal détecté mais mal classifié ; 
-* les vrais positifs quand une espèce présente sur la photo est détecté et bien classifiée ;
-* les faux positifs quand une espèce n'est pas sur une photo mais y est détectée.
+On peut formaliser ces calculs d'erreur en distinguant FN, TP et FP. On rappelle que 
+* un faux négatif FN correspond à une espèce présente sur la photo qui n'est pas détectée ; on peut redécouper en Void si animal pas détecté et False si animal détecté mais mal classifié ; 
+* un vrai positif TP correspond à une espèce présente sur la photo qui est détectée et bien classifiée ;
+* un faux positif FP correspond à une espèce qui n'est pas sur une photo mais qui y est détectée.
 
 Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script Python detect.py téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/62ORvHlZEpNdA5y) qui permet de faire ces calculs. Je mets ce script dans /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/ et il ne manque plus qu'à modifier deux lignes du script. 
 
