@@ -340,6 +340,40 @@ avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.ne
 Pour évaluer la qualité de la classification, on compare les tags manuels au catégories prédites par l'algorithme. On fait ça sous R : 
 
 ```
+# load suite of packages to manage/visualise data
+library(tidyverse)
+
+# remove blanks in pix names of manual tags
+manual_tags <- manual_tags %>%
+  mutate(FileName = str_remove_all(FileName,' '))
+print(manual_tags, n = Inf)
+
+# read in classifications
+classif <- read_tsv('/Users/oliviergimenez/Desktop/classif_pix.txt', col_names = FALSE) %>%
+  mutate(X1 = str_replace(X1, 'chat forestier', 'chat_forestier')) %>%
+  filter(!str_detect(X1, 'tracking')) %>%
+  separate(X1, 
+           into = c("name","species","confidence","x","y","z","t"), 
+           sep = '\\s') %>%
+  mutate(x = str_remove(x,'\\['),
+         x = str_remove(x,','),
+         y = str_remove(y,','),
+         z = str_remove(z,','),
+         t = str_remove(t,'\\]'),
+         t = str_remove(t,','),
+         x = as.numeric(x),
+         y = as.numeric(y),
+         z = as.numeric(z),
+         t = as.numeric(t)) %>%
+  rename(FileName = name) %>%
+  select(FileName, species, confidence, x, y , z, t) %>%
+  mutate(FileName = str_remove(FileName, 'pix_resized/'))
+print(classif, n = Inf)
+
+# comparison
+manual_tags %>% left_join(classif) %>% rename(ground_truth = Keywords, prediction = species) %>% print(n=Inf)
+
+
 Joining, by = "FileName"
 # A tibble: 51 x 8
    FileName                                                                       ground_truth   prediction     confidence     x     y     z     t
