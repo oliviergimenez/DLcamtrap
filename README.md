@@ -356,11 +356,11 @@ Les résultats s'affichent à l'écran, avec le nom de fichier, l'espèce identi
 ```
 python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2txt.py >> classif_pix.txt
 ```
-avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/nQZOyFG3bxVAzpW). 
+avec le fichier ainsi créé téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/hij5qFehiffFnGB). 
 
 ## Etape 5. Evaluation. 
 
-Pour évaluer la qualité de la classification, on compare les tags manuels au catégories prédites par l'algorithme. On fait ça sous `R` : 
+Pour évaluer la qualité de la classification, on compare les tags manuels au catégories prédites par l'algorithme. On fait ça dans `R` : 
 
 ```
 # read in classifications
@@ -370,6 +370,7 @@ classif <- read_tsv('/Users/oliviergimenez/Desktop/classif_pix.txt', col_names =
   separate(X1, 
            into = c("name","species","confidence","x","y","z","t"), 
            sep = '\\s') %>%
+  mutate(species = str_replace(species, 'chat_forestier', 'chat forestier')) %>%
   mutate(x = str_remove(x,'\\['),
          x = str_remove(x,','),
          y = str_remove(y,','),
@@ -388,6 +389,7 @@ print(classif, n = Inf)
 # comparison
 manual_tags %>% left_join(classif) %>% rename(ground_truth = Keywords, prediction = species) %>% print(n=Inf)
 
+
 Joining, by = "FileName"
 # A tibble: 51 x 8
    FileName                                                                       ground_truth   prediction     confidence     x     y     z     t
@@ -400,7 +402,7 @@ Joining, by = "FileName"
  6 Cdy00004(4)resized.JPG                                                         renard         renard         0.9731693    523   354   726   475
  7 Cdy00005(4)resized.JPG                                                         chevreuil      chevreuil      0.9998088     64   263   576   583
  8 Cdy00005(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
- 9 Cdy00007(5)resized.JPG                                                         chat forestier chat_forestier 0.9999943    402   325   636   488
+ 9 Cdy00007(5)resized.JPG                                                         chat forestier chat forestier 0.9999943    402   325   636   488
 10 Cdy00008(5)resized.JPG                                                         vehicule       NA             NA            NA    NA    NA    NA
 11 Cdy00008resized.JPG                                                            chevreuil      chamois        0.9989721    508   207   614   364
 12 Cdy00008resized.JPG                                                            chevreuil      chevreuil      0.8156294    508   207   614   364
@@ -410,7 +412,7 @@ Joining, by = "FileName"
 16 Cdy00020resized.JPG                                                            renard         renard         1.0          666   397  1023   558
 17 FDC01_point_15-4a79b79d.2_corlier_montlier_2018_7_23_flanc_droit(3)resized.JPG lynx           lynx           0.9999405    705   429   923   564
 18 FDC01_point_36.2_evosges_le_col_2017_09_10_flanc_droitresized.JPG              lynx           lynx           0.99999857     0   318   310   565
-19 FDC01_point_36.2_evosges_le_col_2017_09_29_cuissegaucheresized.JPG             lynx           NA             NA            NA    NA    NA    NA
+19 FDC01_point_36.2_evosges_le_col_2017_09_29_cuisse_gaucheresized.JPG            lynx           lynx           0.99994063     0   330   336   652
 20 FDC01_point_36.2_evosges_le_col_2017_10_10_flanc_droitresized.JPG              lynx           lynx           0.99994177   264   346   957   755
 21 I__00001(7)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
 22 I__00002(7)resized.JPG                                                         vide           NA             NA            NA    NA    NA    NA
@@ -430,18 +432,18 @@ Joining, by = "FileName"
 36 I__00020(6)resized.JPG                                                         chevreuil      chevreuil      0.9999998    208   128   863   717
 37 I__00021resized.JPG                                                            blaireaux      blaireaux      0.9999975    372   339   581   434
 38 I__00022(7)resized.JPG                                                         chien          NA             NA            NA    NA    NA    NA
-39 I__00023(7)resized.JPG                                                         chat           chat_forestier 0.77948236   739   497  1022   756
+39 I__00023(7)resized.JPG                                                         chat           chat forestier 0.77948236   739   497  1022   756
 40 I__00024(8)resized.JPG                                                         chat           renard         0.96120846   546   387  1022   756
 41 I__00024(8)resized.JPG                                                         chat           chamois        0.7607192    555   382  1022   755
 42 I__00025(10)resized.JPG                                                        chevreuil      chevreuil      0.9999732    282   217  1020   759
 43 I__00026(11)resized.JPG                                                        sangliers      sangliers      0.9359536    473   303  1022   762
-44 I__00028resized.JPG                                                            lievre         lièvre         0.990306     732   300  1022   622
+44 I__00028resized.JPG                                                            lievre         lievre         0.990306     732   300  1022   622
 45 I__00028resized.JPG                                                            lievre         lynx           0.86009955   734   300  1022   623
 46 I__00033(6)resized.JPG                                                         oiseaux        NA             NA            NA    NA    NA    NA
 47 I__00033(9)resized.JPG                                                         humain         NA             NA            NA    NA    NA    NA
-48 I__00049(6)resized.JPG                                                         chat forestier lièvre         0.9782964    145   355   508   689
-49 I__00049(6)resized.JPG                                                         chat forestier chat_forestier 0.56414235   143   353   509   690
-50 I__00051(10)resized.JPG                                                        lievre         lièvre         0.99998236   281   438   664   725
+48 I__00049(6)resized.JPG                                                         chat forestier lievre         0.9782964    145   355   508   689
+49 I__00049(6)resized.JPG                                                         chat forestier chat forestier 0.56414235   143   353   509   690
+50 I__00051(10)resized.JPG                                                        lievre         lievre         0.99998236   281   438   664   725
 51 I__00060(10)resized.JPG                                                        humain         NA             NA            NA    NA    NA    NA
 ```
 
@@ -452,7 +454,7 @@ On peut formaliser ces calculs d'erreur en distinguant FN, TP et FP. On rappelle
 * un vrai positif TP correspond à une espèce présente sur la photo qui est détectée et bien classifiée ;
 * un faux positif FP correspond à une espèce qui n'est pas sur une photo mais qui y est détectée.
 
-Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script `detect.py` téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/62ORvHlZEpNdA5y) qui permet de faire ces calculs. Je mets ce script dans `/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/` et il ne manque plus qu'à modifier deux lignes du script. 
+Pas facile de faire ces calculs à la main quand on a beaucoup de photos. Heureusement, Gaspard Dussert fournit un script `detect.py` téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/UVZJsgTJKTRYfw6) qui permet de faire ces calculs. Je mets ce script dans `/Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/` et il ne manque plus qu'à modifier deux lignes du script. 
 
 Au début, modifier la ligne
 ```
@@ -516,6 +518,7 @@ lievre 2
 sangliers 4
 chat 2
 blaireaux 1
+
 ```
 
 On peut, comme précédemment, mettre tout ça dans un fichier texte via une redirection :
@@ -523,18 +526,18 @@ On peut, comme précédemment, mettre tout ça dans un fichier texte via une red
 python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect.py >> perf.txt
 ```
 
-On peut jeter un coup d'oeil au résultat [là](https://mycore.core-cloud.net/index.php/s/GnJwuAnI2NUyin6).
+On peut jeter un coup d'oeil au résultat [là](https://mycore.core-cloud.net/index.php/s/f8NLRjSfj6eJXDj).
 
 On note que sur le lynx, on est tout bon. Sur chevreuil on a qqs faux négatifs, et sur chamois qqs faux positifs.
 
-Si l'on n'est pas intéressé par le détail dans les faux négatifs, on peut utiliser un autre script `Python`, `detect2.py`, téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/uAWT3lxQetkIH68), et qui permet de mettre sur les photos le cadre avec l'espèce vérité et le cadre avec l'espèce prédite, et de créer trois nouveaux répertoires qui contiennent les photos classées en TP, FN et FP, permettant ainsi d'aller regarder en détail les situations qui génèrent les faux négatifs et faux positifs. Ces répertoires se trouvent dans le répertoire qui contient les photos analysées, dans `pix_resized/`.
+Si l'on n'est pas intéressé par le détail dans les faux négatifs, on peut utiliser un autre script `Python`, `detect2.py`, téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/jFt5uKzyCHMhHNR), et qui permet de mettre sur les photos le cadre avec l'espèce vérité et le cadre avec l'espèce prédite, et de créer trois nouveaux répertoires qui contiennent les photos classées en TP, FN et FP, permettant ainsi d'aller regarder en détail les situations qui génèrent les faux négatifs et faux positifs. Ces répertoires se trouvent dans le répertoire qui contient les photos analysées, dans `pix_resized/`.
 
 Avant de lancer le script, il faut modifier les deux mêmes lignes que pour le script `detect.py`. Puis on le lance via :
 ```
 python /Users/oliviergimenez/Desktop/keras-retinanet/keras_retinanet/bin/detect2.py >> perf2.txt
 ```
 
-On peut jeter un coup d'oeil à `perf2.txt` téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/Ex9KJOkdB8nClnH) : 
+On peut jeter un coup d'oeil à `perf2.txt` téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/tynOnsVxVBNrvkE) : 
 ```
           species  TP  FP  FN
 0       blaireaux   1   0   0
@@ -576,6 +579,6 @@ Au passage, ces scripts `detect.py` et `detect2.py` font en un coup les étapes 
 
 ## La suite ? 
 
-* Vérifier que l'algo déjà entrainé n'est pas à côté de la plaque dans l'Ain en comparant les tags manuels entrés par les collègues de l'OFB à la classification prédite de l'algo. Si on n'est pas trop dans les choux, alors fair ele tagging automatique pour toutes les photos de l'Ain pour que Maëlis puisse se servir de ces données pour le stage. 
+* Vérifier que l'algo déjà entrainé n'est pas à côté de la plaque dans l'Ain en comparant tous les tags manuels entrés par les collègues de l'OFB à la classification prédite par l'algo. Si on n'est pas trop dans les choux, alors faire le tagging automatique pour toutes les photos de l'Ain pour que Maëlis puisse se servir de ces données pour le stage. 
 
-* A moyen terme, refaire l'entrainement du modèle avec toutes les photos du Jura annotées par Anna (?) et toutes les photos de l'Ain annotées par les collègues de l'OFB. Plus on a de photos, mieux c'est. Ce modèle pourra alors être utilisé pour tagger les photos restantes dans l'Ain, et pour tagger à l'avenir les photos collectées dans le cadre du PPP Lynx. 
+* A moyen terme, refaire l'entrainement du modèle avec toutes les photos du Jura annotées par Anna (plutôt que l'échantillon de 8800 photos utilisées par Gaspard) et toutes les photos de l'Ain annotées par les collègues de l'OFB. **Plus on a de photos, mieux c'est**. Ce modèle pourra alors être utilisé pour tagger les photos restantes dans l'Ain, et pour tagger à l'avenir les photos collectées dans le cadre du PPP Lynx. 
