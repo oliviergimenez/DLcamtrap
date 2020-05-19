@@ -2,14 +2,14 @@
 
 On va utilisé les méthodes de deep learning ou aprentissage profond pour faire l'identification automatique des espèces sur les images collectées via piégeages photographiques. Pour une introduction au deep learning (niveau lycée, d'après l'auteur), voir [ici](https://t.co/aAFS14fJuN?amp=1). Pour une introduction avec R au deep learning qui permet aussi de comprendre les réseaux de neurones, voir [là](http://eric.univ-lyon2.fr/~ricco/tanagra/fichiers/fr_Tanagra_Tensorflow_Keras_R.pdf). Je conseille [ça](https://agentmorris.github.io/camera-trap-ml-survey/) pour une veille sur deep learning et piégeage photographique. 
 
-Passons à nos affaires. Comme exemple, j'ai assemblé un ensemble de 46 photos annotées à la main téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/ub5iTNSktszLvCv). Attention, bien s'assurer qu'il n'y a pas d'espace dans le nom des fichiers, et que les étiquettes (tags) ne comportent pas d'erreurs (sous Mac, on peut utiliser Photo pour modifier ces tags). L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier pix/ dont le chemin absolu est /Users/oliviergimenez/Desktop/. 
+Passons à nos affaires. Comme exemple, j'ai assemblé un ensemble de 46 photos annotées à la main téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/ub5iTNSktszLvCv). Attention, bien s'assurer qu'il n'y a pas d'espace dans le nom des fichiers, et que les étiquettes (tags) ne comportent pas d'erreurs (sous Mac, on peut utiliser Photo pour modifier ces tags). L'information sur ce qui a été détecté dans chaque photo apparait dans les métadonnées des photos. Sous Mac, il suffit de faire un Cmd + I pour avoir cette info. Les photos sont stockées dans un dossier `pix/` dont le chemin absolu est `/Users/oliviergimenez/Desktop/`. 
 
 On souhaite utiliser un modèle déjà existant, et évalué les performances de ce modèle à reconnaître les espèces qui sont sur les 46 photos de mon échantillon, et en particulier lynx, chamois et chevreuils. Ce modèle a été entrainé à classifier les espèces sur un échantillon des photos du Jura annotées par Anna Chaine. 
 
 Pour évaluer ces performances, on va se concentrer sur : 
-* les vrais positifs ou TP : le modèle prédit que l'espèce d'intérêt est présente sur la photo quand celle-ci est effectivement présente sur cette photo ; 
-* les faux positifs ou FP : le modèle prédit la présence de l'espèce d'intérêt, mais celle-ci n'est en fait pas présente sur la photo ;
-* les faux négatifs ou FN : le modèle prédit que l'espèce d'intérêt n'est pas présente sur la photo alors que celle-ci est bien présente ; on pourra séparer les FN en FN_void Fsi l'espèce n'a pas été détectée, et FN_false si l'espèce a été détectée mais mal classifiée. 
+* les **vrais positifs ou TP** : le modèle prédit que l'espèce d'intérêt est présente sur la photo quand celle-ci est effectivement présente sur cette photo ; 
+* les **faux positifs ou FP** : le modèle prédit la présence de l'espèce d'intérêt, mais celle-ci n'est en fait pas présente sur la photo ;
+* les **faux négatifs ou FN** : le modèle prédit que l'espèce d'intérêt n'est pas présente sur la photo alors que celle-ci est bien présente ; on pourra séparer les FN en FN_void Fsi l'espèce n'a pas été détectée, et FN_false si l'espèce a été détectée mais mal classifiée. 
 
 Ci-dessous on trouvera les différentes étapes du pipeline. C'est un mix de scripts R et Python. On applique une procédure en 2 étapes, détection puis classification. La même idée est appliquée par d'autres pour des projets (et avec des moyens) beaucoup plus ambitieux, voir par exemple [celui-ci](https://medium.com/microsoftazure/accelerating-biodiversity-surveys-with-azure-machine-learning-9be53f41e674). 
 
@@ -28,7 +28,7 @@ La dernière étape a donc été d'ajouter dans le background les classes avec p
 
 ## Etape 1. Redimensionnement.
 
-On redimensionne d'abord les images. Pour ce faire, on applique ces quelques lignes de code dans R. On utilise le package magical qui appelle l'excellent petit logiciel imagemagick. Les photos contenues dans le répertoire /Users/oliviergimenez/Desktop/pix sont redimensionnées en 1024x1024 dans le répertoire /Users/oliviergimenez/Desktop/pix_resized. Le nom de chaque photo est affublé d'un resized pour les différentier des photos originales. Le résultat est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/pIanPETOyYIPwnN). 
+Passons maintenant au coeur de l'exercice, la classification automatique des 46 photos. On redimensionne d'abord les images. Pour ce faire, on applique ces quelques lignes de code dans `R`. On utilise le package magical qui appelle l'excellent petit logiciel imagemagick. Les photos contenues dans le répertoire /Users/oliviergimenez/Desktop/pix sont redimensionnées en 1024x1024 dans le répertoire /Users/oliviergimenez/Desktop/pix_resized. Le nom de chaque photo est affublé d'un resized pour les différentier des photos originales. Le résultat est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/pIanPETOyYIPwnN). 
 
 ```
 # load package to make R talk to imagemagick
