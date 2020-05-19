@@ -28,7 +28,7 @@ La dernière étape a donc été d'ajouter dans le background les classes avec p
 
 ## Etape 1. Redimensionnement.
 
-Passons maintenant au coeur de l'exercice, la classification automatique des 46 photos. On redimensionne d'abord les images. Pour ce faire, on applique ces quelques lignes de code dans `R`. On utilise le package magical qui appelle l'excellent petit logiciel imagemagick. Les photos contenues dans le répertoire /Users/oliviergimenez/Desktop/pix sont redimensionnées en 1024x1024 dans le répertoire /Users/oliviergimenez/Desktop/pix_resized. Le nom de chaque photo est affublé d'un resized pour les différentier des photos originales. Le résultat est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/pIanPETOyYIPwnN). 
+Passons maintenant au coeur de l'exercice, la classification automatique des 46 photos. On redimensionne d'abord les images. Pour ce faire, on applique ces quelques lignes de code dans `R`. On utilise le package magical qui appelle l'excellent petit logiciel `imagemagick`. Les photos contenues dans le répertoire `/Users/oliviergimenez/Desktop/pix` sont redimensionnées en 1024x1024 dans le répertoire `/Users/oliviergimenez/Desktop/pix_resized`. Les chemins sont à modifier selon les goûts. Le nom de chaque photo est affublé d'un resized pour les différentier des photos originales. Le résultat est téléchargeable [ici](https://mycore.core-cloud.net/index.php/s/pIanPETOyYIPwnN). 
 
 ```
 # load package to make R talk to imagemagick
@@ -57,7 +57,7 @@ for (i in 1:length(file_list)){
 
 ## Etape 2. Détection. 
 
-On fait la détection des objets dans les photos. On utilise [MegaDetector](https://github.com/microsoft/CameraTraps#overview) pour se faciliter la vie. Cet algorithme va détecter les objets sur les photos et leur associer un cadre, une boîte. 
+On passe maintenant à la détection des objets dans les photos. Pour ce faire, on utilise [MegaDetector](https://github.com/microsoft/CameraTraps#overview) pour se faciliter la vie. Cet algorithme va détecter les objets sur les photos et leur associer un cadre, une boîte. 
 
 Pour ce faire, il faut d'abord télécharger [CameraTraps](https://github.com/microsoft/CameraTraps). Puis, depuis un Terminal, se mettre dans le répertoire CameraTraps/ et suivre [les instructions d'installation](https://github.com/microsoft/CameraTraps#initial-setup). Si on n'a pas de GPU, il faut modifier le fichier dans le fichier environment-detector.yml en commentant la ligne 
 ```
